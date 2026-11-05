@@ -7,9 +7,11 @@ A lightweight and intuitive task management application built with Flutter and M
 ## Features
 
 - **Task Management**: Create, toggle completion, and delete tasks quickly.
-- **Task Details & Priorities**: Edit task names, assign priority levels (*Low*, *Medium*, *High*), and toggle status.
+- **Task Details & Priorities**: Assign priority levels (*Low*, *Medium*, *High*), view visual priority tags, and edit task details.
+- **Search & Filter**: Real-time keyword search combined with Status and Priority filter chips.
+- **Settings & Theme Control**: Live switching between System default, Light mode, and Dark mode, plus task preferences and data management.
 - **Productivity Stats**: Track task completion with a live progress bar and summary metrics (Total, Completed, Pending).
-- **Clean UI**: Built with Flutter Material 3 design principles for a fast and responsive experience.
+- **Rounded Card UI**: Beautiful Material 3 cards with rounded corners, swipe-to-delete, and quick action menus.
 
 ---
 
@@ -17,11 +19,15 @@ A lightweight and intuitive task management application built with Flutter and M
 
 ```text
 lib/
-├── main.dart                  # App entry point & theme configuration
+├── main.dart                  # App entry point & dynamic theme configuration
+├── models/
+│   └── todo_item.dart         # Task data model
 └── pages/
-    ├── todo_list_page.dart    # Main task list view & model
-    ├── add_todo_page.dart     # New task entry screen
+    ├── todo_list_page.dart    # Home page with rounded task cards & filters
+    ├── add_todo_page.dart     # New task entry screen with priority selector
     ├── task_details_page.dart # Task editor & priority selector
+    ├── search_page.dart       # Search page with filter chips
+    ├── settings_page.dart     # Settings page (System/Light/Dark mode & prefs)
     └── stats_page.dart        # Productivity metrics & progress bar
 ```
 

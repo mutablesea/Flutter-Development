@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
-// Relative import pointing down into the pages/ directory
 import 'pages/todo_list_page.dart';
+
+/// Global notifier controlling theme mode across the app (System, Light, Dark).
+final ValueNotifier<ThemeMode> themeModeNotifier =
+    ValueNotifier<ThemeMode>(ThemeMode.system);
 
 void main() {
   runApp(const TaskFlowApp());
@@ -12,14 +15,36 @@ class TaskFlowApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Task Flow',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const TodoListPage(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeModeNotifier,
+      builder: (context, currentMode, _) {
+        return MaterialApp(
+          title: 'Task Flow',
+          debugShowCheckedModeBanner: false,
+          themeMode: currentMode,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              brightness: Brightness.light,
+            ),
+            useMaterial3: true,
+            cardTheme: const CardThemeData(
+              surfaceTintColor: Colors.transparent,
+            ),
+          ),
+          darkTheme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple,
+              brightness: Brightness.dark,
+            ),
+            useMaterial3: true,
+            cardTheme: const CardThemeData(
+              surfaceTintColor: Colors.transparent,
+            ),
+          ),
+          home: const TodoListPage(),
+        );
+      },
     );
   }
 }

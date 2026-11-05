@@ -46,11 +46,11 @@ class StatsPage extends StatelessWidget {
             const SizedBox(height: 20),
             Row(
               children: [
-                _buildStatCard('Total Tasks', '$total', Colors.blue),
+                _buildStatCard(context, 'Total Tasks', '$total', Colors.blue),
                 const SizedBox(width: 12),
-                _buildStatCard('Completed', '$completed', Colors.green),
+                _buildStatCard(context, 'Completed', '$completed', Colors.green),
                 const SizedBox(width: 12),
-                _buildStatCard('Pending', '$pending', Colors.orange),
+                _buildStatCard(context, 'Pending', '$pending', Colors.orange),
               ],
             ),
           ],
@@ -59,7 +59,13 @@ class StatsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String value, Color color) {
+  Widget _buildStatCard(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+  ) {
+    final theme = Theme.of(context);
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
@@ -81,7 +87,10 @@ class StatsPage extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               label,
-              style: const TextStyle(fontSize: 13, color: Colors.black87),
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
