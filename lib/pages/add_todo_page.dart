@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Second page
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
 

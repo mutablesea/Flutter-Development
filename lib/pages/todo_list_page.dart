@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
-// Relative import: both files live in the same 'pages/' folder
-// First page
+// Relative imports: pages live in the same 'pages/' folder
 import 'add_todo_page.dart';
+import 'stats_page.dart';
+import 'task_details_page.dart';
 
 class TodoItem {
-  final String title;
+  String title;
   bool isDone;
+  String priority;
 
-  TodoItem({required this.title, this.isDone = false});
+  TodoItem({
+    required this.title,
+    this.isDone = false,
+    this.priority = 'Medium',
+  });
 }
 
 class TodoListPage extends StatefulWidget {
@@ -48,7 +54,22 @@ class _TodoListPageState extends State<TodoListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Task Flow')),
+      appBar: AppBar(
+        title: const Text('Task Flow'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.bar_chart),
+            tooltip: 'Productivity Stats',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => StatsPage(tasks: _tasks),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: _tasks.isEmpty
           ? const Center(
               child: Text(
@@ -61,6 +82,16 @@ class _TodoListPageState extends State<TodoListPage> {
               itemBuilder: (context, index) {
                 final task = _tasks[index];
                 return ListTile(
+                  onTap: () async {
+                    final updated = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (context) => TaskDetailsPage(task: task),
+                      ),
+                    );
+                    if (updated == true) {
+                      setState(() {});
+                    }
+                  },
                   leading: Checkbox(
                     value: task.isDone,
                     onChanged: (bool? value) {
