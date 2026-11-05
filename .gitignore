@@ -1,0 +1,418 @@
+# Universal gitignore for Flutter Development
+
+# ==============================================================================
+# MISCELLANEOUS & OPERATING SYSTEM
+# ==============================================================================
+
+# Compiled Java class files
+*.class
+
+# Dependency and package lock files
+*.lock
+
+# Application and runtime log files
+*.log
+
+# Compiled Python bytecode files
+*.pyc
+
+# Text editor swap files
+*.swp
+
+# macOS directory metadata
+.DS_Store
+
+# Atom editor configuration folder
+.atom/
+
+# Build artifacts directory
+.build/
+
+# Build log directory
+.buildlog/
+
+# Local edit history directory
+.history
+
+# Subversion version control metadata
+.svn/
+
+# Swift Package Manager directory
+.swiftpm/
+
+# Temporary migration working directory
+migrate_working_dir/
+
+
+# ==============================================================================
+# IDE & CODE EDITORS
+# ==============================================================================
+
+# IntelliJ IDEA module files
+*.iml
+
+# IntelliJ IDEA project files
+*.ipr
+
+# IntelliJ IDEA workspace files
+*.iws
+
+# IntelliJ IDEA and Android Studio configuration directory
+.idea/
+
+# VS Code workspace settings and debug configurations
+.vscode/
+
+
+# ==============================================================================
+# FLUTTER FRAMEWORK & ENGINE REPO SPECIFIC
+# ==============================================================================
+
+# Flutter SDK downloaded engine artifacts and cache
+/bin/cache/
+
+# Flutter internal bootstrap script for Windows
+/bin/internal/bootstrap.bat
+
+# Flutter internal bootstrap script for Linux/macOS
+/bin/internal/bootstrap.sh
+
+# Bundled minimal Git binary for Windows Flutter SDK
+/bin/mingit/
+
+# Internal mega gallery benchmark test directory
+/dev/benchmarks/mega_gallery/
+
+# Flutter CI test recipe dependencies
+/dev/bots/.recipe_deps/
+
+# Downloaded Android tools for CI test bots
+/dev/bots/android_tools/
+
+# Flutter devicelab benchmark results
+/dev/devicelab/ABresults*.json
+
+# Generated API documentation directory
+/dev/docs/doc/
+
+# Compressed Flutter documentation archive
+/dev/docs/flutter.docs.zip
+
+# Flutter documentation tool library
+/dev/docs/lib/
+
+# Flutter documentation tool pubspec file
+/dev/docs/pubspec.yaml
+
+# User data from integration tests
+/dev/integration_tests/**/xcuserdata
+
+# CocoaPods directory from integration tests
+/dev/integration_tests/**/Pods
+
+# Test coverage data for the Flutter framework
+/packages/flutter/coverage/
+
+# Flutter SDK version tracking file
+version
+
+# Dart analyzer benchmark performance metrics
+analysis_benchmark.json
+
+# Auto-generated package mapping file for multi-root projects
+.packages.generated
+
+
+# ==============================================================================
+# FLUTTER / DART / PUB
+# ==============================================================================
+
+# Dartdoc generated API documentation
+**/doc/api/
+
+# Dart build and analysis cache directory
+.dart_tool/
+
+# Auto-generated Flutter plugin registry list
+.flutter-plugins
+
+# Auto-generated Flutter plugin dependency mappings
+.flutter-plugins-dependencies
+
+# Auto-generated Dart plugin registrant file
+**/generated_plugin_registrant.dart
+
+# Legacy Dart package resolution file
+.packages
+
+# Pub package preload cache
+.pub-preload-cache/
+
+# Local Pub package cache
+.pub-cache/
+
+# Dart Pub working directory
+.pub/
+
+# Flutter build output directory
+build/
+/build/
+
+# Screenshots generated during driver and integration tests
+flutter_*.png
+
+# Linked kernel snapshot files
+linked_*.ds
+
+# Unlinked kernel snapshot files
+unlinked.ds
+
+# Unlinked analyzer specification snapshots
+unlinked_spec.ds
+
+
+# ==============================================================================
+# SYMBOLS & CODE OBFUSCATION
+# ==============================================================================
+
+# Application debug symbols
+app.*.symbols
+
+# Code obfuscation symbol map files
+app.*.map.json
+
+
+# ==============================================================================
+# ENVIRONMENT VARIABLES & SECRETS
+# ==============================================================================
+
+# Default environment variables file
+.env
+
+# Environment-specific secret configuration files
+.env.*
+
+
+# ==============================================================================
+# ANDROID PLATFORM
+# ==============================================================================
+
+# Gradle build cache directories
+.gradle/
+**/android/.gradle/
+
+# Android Studio memory and CPU profiling captures
+**/android/captures/
+
+# Machine-specific Android SDK paths
+**/android/local.properties
+
+# Auto-generated Android plugin registrant source
+**/android/**/GeneratedPluginRegistrant.java
+
+# Release signing credentials and passwords
+**/android/key.properties
+
+# Java KeyStore files
+*.jks
+
+# Android application signing keystores
+*.keystore
+
+# Android debug build output
+/android/app/debug
+
+# Android profile build output
+/android/app/profile
+
+# Android production release build output
+/android/app/release
+
+# Gradle wrapper binaries (kept tracked so users can build without global Gradle)
+# **/android/gradlew
+# **/android/gradlew.bat
+# **/android/**/gradle-wrapper.jar
+
+
+# ==============================================================================
+# IOS / XCODE
+# ==============================================================================
+
+# Xcode 3 legacy display configuration
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+
+# Xcode file backup history
+**/ios/**/*.moved-aside
+
+# Xcode personal user preferences
+**/ios/**/*.pbxuser
+
+# Xcode window layout configuration
+**/ios/**/*.perspectivev3
+
+# Xcode synchronization state
+**/ios/**/*sync/
+
+# SCons build cache database
+**/ios/**/.sconsign.dblite
+
+# Editor tag index files
+**/ios/**/.tags*
+
+# Vagrant virtual machine configurations
+**/ios/**/.vagrant/
+
+# Xcode compiled build output and indexing data
+**/ios/**/DerivedData/
+
+# Custom folder icon files
+**/ios/**/Icon?
+
+# iOS CocoaPods library dependencies
+**/ios/**/Pods/
+
+# Symbolic links created for plugins
+**/ios/**/.symlinks/
+
+# Execution profiling data
+**/ios/**/profile
+
+# Developer workspace settings and user state
+**/ios/**/xcuserdata
+
+# iOS generated configuration directory
+**/ios/.generated/
+
+# Flutter build tracking identifier
+**/ios/Flutter/.last_build_id
+
+# Compiled Flutter iOS application framework
+**/ios/Flutter/App.framework
+
+# Flutter engine framework for iOS
+**/ios/Flutter/Flutter.framework
+
+# Flutter engine podspec
+**/ios/Flutter/Flutter.podspec
+
+# Auto-generated Xcode build settings
+**/ios/Flutter/Generated.xcconfig
+
+# Ephemeral build artifacts and engine scripts
+**/ios/Flutter/ephemeral
+
+# Legacy Flutter application archives
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+
+# Packaged Flutter assets directory
+**/ios/Flutter/flutter_assets/
+
+# Script to export Flutter environment variables
+**/ios/Flutter/flutter_export_environment.sh
+
+# Backend service definitions configuration
+**/ios/ServiceDefinitions.json
+
+# Auto-generated iOS plugin registrant files
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+
+# ==============================================================================
+# MACOS PLATFORM
+# ==============================================================================
+
+# macOS ephemeral build directory
+**/Flutter/ephemeral/
+**/macos/Flutter/ephemeral
+**/macos/Flutter/ephemeral/
+
+# macOS CocoaPods library dependencies
+**/Pods/
+**/macos/Pods/
+
+# macOS plugin symlinks
+**/macos/.symlinks/
+
+# Auto-generated macOS plugin registrant
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# macOS developer user data
+**/xcuserdata/
+
+
+# ==============================================================================
+# WINDOWS PLATFORM
+# ==============================================================================
+
+# Windows C++ build tools and ephemeral binaries
+**/windows/flutter/ephemeral/
+
+# Auto-generated C++ plugin registrant source
+**/windows/flutter/generated_plugin_registrant.cc
+
+# Auto-generated C++ plugin registrant header
+**/windows/flutter/generated_plugin_registrant.h
+
+# Auto-generated CMake configuration for Windows plugins
+**/windows/flutter/generated_plugins.cmake
+
+
+# ==============================================================================
+# LINUX PLATFORM
+# ==============================================================================
+
+# Linux C++ build tools and ephemeral binaries
+**/linux/flutter/ephemeral/
+
+# Auto-generated C++ plugin registrant source
+**/linux/flutter/generated_plugin_registrant.cc
+
+# Auto-generated C++ plugin registrant header
+**/linux/flutter/generated_plugin_registrant.h
+
+# Auto-generated CMake configuration for Linux plugins
+**/linux/flutter/generated_plugins.cmake
+
+
+# ==============================================================================
+# WEB & UI PREVIEWS
+# ==============================================================================
+
+# Auto-generated Web bootstrap script
+**/web/flutter_bootstrap.js
+
+# Temporary widget preview cache
+.widget_preview/
+
+
+# ==============================================================================
+# CODE COVERAGE
+# ==============================================================================
+
+# Unit and widget test code coverage reports
+coverage/
+/coverage/
+
+
+# ==============================================================================
+# EXCEPTIONS (Keep tracked in Git)
+# ==============================================================================
+
+# Retain default Xcode layout settings
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+
+# Retain default Xcode user preferences
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+
+# Retain test package mappings in Flutter engine tests
+!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+
+# Retain Flutter CI automation gemfile lock
+!/dev/ci/**/Gemfile.lock
+
+# Retain project dependency lock file for reproducible builds across all machines
+!pubspec.lock
