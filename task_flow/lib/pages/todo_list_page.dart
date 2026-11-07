@@ -7,6 +7,7 @@ import 'calendar_page.dart';
 import 'categories_page.dart';
 import 'collaborators_page.dart';
 import 'feedback_support_page.dart';
+import 'habit_tracker_page.dart';
 import 'login_page.dart';
 import 'notifications_page.dart';
 import 'onboarding_page.dart';
@@ -423,6 +424,18 @@ class _TodoListPageState extends State<TodoListPage> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => const RoutinesPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.track_changes_rounded),
+                title: const Text('Habit Tracker'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const HabitTrackerPage(),
                     ),
                   );
                 },
