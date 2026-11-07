@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../models/todo_item.dart';
 import 'add_todo_page.dart';
+import 'calendar_page.dart';
+import 'categories_page.dart';
+import 'onboarding_page.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
+import 'splash_page.dart';
 import 'stats_page.dart';
 import 'task_details_page.dart';
+import 'trash_page.dart';
 
 // Re-export TodoItem so existing imports pointing to todo_list_page continue working seamlessly
 export '../models/todo_item.dart';
@@ -24,23 +29,30 @@ class _TodoListPageState extends State<TodoListPage> {
       title: 'Learn Dart fundamentals',
       isDone: true,
       priority: 'High',
+      category: 'Study',
     ),
     TodoItem(
       title: 'Build multi-page UI in Flutter',
       isDone: false,
       priority: 'High',
+      category: 'Work',
     ),
     TodoItem(
       title: 'Design rounded task cards & filters',
       isDone: false,
       priority: 'Medium',
+      category: 'Work',
     ),
     TodoItem(
       title: 'Review settings and dark mode theme',
       isDone: false,
       priority: 'Low',
+      category: 'General',
     ),
   ];
+
+  // Tasks moved to Trash Bin
+  final List<TodoItem> _trashedTasks = [];
 
   // Active home filter
   String _selectedPriorityFilter = 'All'; // 'All', 'High', 'Medium', 'Low'
@@ -86,24 +98,87 @@ class _TodoListPageState extends State<TodoListPage> {
     if (taskIndex == -1) return;
 
     final removedTask = _tasks[taskIndex];
+    removedTask.deletedAt = DateTime.now();
     setState(() {
       _tasks.removeAt(taskIndex);
+      _trashedTasks.insert(0, removedTask);
     });
 
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Removed "${removedTask.title}"'),
+        content: Text('Moved "${removedTask.title}" to Trash'),
         action: SnackBarAction(
           label: 'UNDO',
           onPressed: () {
             setState(() {
+              _trashedTasks.remove(removedTask);
+              removedTask.deletedAt = null;
               _tasks.insert(taskIndex, removedTask);
             });
           },
         ),
       ),
     );
+  }
+
+  void _openCalendarPage() {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => CalendarPage(
+              tasks: _tasks,
+              onAddTask: (newTask) => setState(() => _tasks.add(newTask)),
+              onTasksUpdated: () => setState(() {}),
+            ),
+          ),
+        )
+        .then((_) => setState(() {}));
+  }
+
+  void _openCategoriesPage() {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => CategoriesPage(
+              tasks: _tasks,
+              onAddTask: (newTask) => setState(() => _tasks.add(newTask)),
+              onTasksUpdated: () => setState(() {}),
+            ),
+          ),
+        )
+        .then((_) => setState(() {}));
+  }
+
+  void _openTrashPage() {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => TrashPage(
+              trashedTasks: _trashedTasks,
+              onRestoreTask: (task) {
+                setState(() {
+                  task.deletedAt = null;
+                  _tasks.add(task);
+                });
+              },
+              onDeletePermanently: (_) => setState(() {}),
+              onRestoreAll: () {
+                setState(() {
+                  for (final t in _trashedTasks) {
+                    t.deletedAt = null;
+                    _tasks.add(t);
+                  }
+                  _trashedTasks.clear();
+                });
+              },
+              onEmptyTrash: () {
+                setState(() => _trashedTasks.clear());
+              },
+            ),
+          ),
+        )
+        .then((_) => setState(() {}));
   }
 
   void _openSearchPage() {
@@ -187,12 +262,120 @@ class _TodoListPageState extends State<TodoListPage> {
     final displayedTasks = _filteredTasks;
 
     return Scaffold(
+      drawer: Drawer(
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        Icons.task_alt_rounded,
+                        color: theme.colorScheme.primary,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Task Flow',
+                          style: TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Smart Workspace',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.checklist_rounded),
+                title: const Text('All Tasks'),
+                selected: true,
+                onTap: () => Navigator.of(context).pop(),
+              ),
+              ListTile(
+                leading: const Icon(Icons.calendar_month_rounded),
+                title: const Text('Calendar Schedule'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openCalendarPage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.category_outlined),
+                title: const Text('Categories'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openCategoriesPage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete_outline_rounded),
+                title: const Text('Trash Bin'),
+                trailing: _trashedTasks.isNotEmpty
+                    ? Badge.count(count: _trashedTasks.length)
+                    : null,
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openTrashPage();
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.auto_graph_rounded),
+                title: const Text('Onboarding Guide'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const OnboardingPage()),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.slideshow_rounded),
+                title: const Text('Preview Splash Screen'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SplashPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
         title: const Text(
           'Task Flow',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month_outlined),
+            tooltip: 'Calendar Schedule',
+            onPressed: _openCalendarPage,
+          ),
           IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'Search & Filters',

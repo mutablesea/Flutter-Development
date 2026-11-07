@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'pages/todo_list_page.dart';
+import 'pages/splash_page.dart';
 
 /// Global notifier controlling theme mode across the app (System, Light, Dark).
 final ValueNotifier<ThemeMode> themeModeNotifier =
@@ -42,7 +42,7 @@ class TaskFlowApp extends StatelessWidget {
               surfaceTintColor: Colors.transparent,
             ),
           ),
-          home: const TodoListPage(),
+          home: const SplashPage(),
         );
       },
     );

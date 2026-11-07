@@ -7,6 +7,10 @@ void main() {
   testWidgets('TaskFlowApp smoke test renders tasks, priorities, and overview',
       (WidgetTester tester) async {
     await tester.pumpWidget(const TaskFlowApp());
+    // Verify Splash screen shows "Task Flow" first, then transitions after 3s
+    expect(find.text('Task Flow'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
 
     // Verify app title and action buttons
     expect(find.text('Task Flow'), findsOneWidget);
@@ -29,6 +33,8 @@ void main() {
   testWidgets('Settings page renders theme options: System, Light, and Dark',
       (WidgetTester tester) async {
     await tester.pumpWidget(const TaskFlowApp());
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
 
     // Tap the settings icon
     await tester.tap(find.byIcon(Icons.settings_outlined));
@@ -49,6 +55,8 @@ void main() {
   testWidgets('Search page allows searching and filtering tasks',
       (WidgetTester tester) async {
     await tester.pumpWidget(const TaskFlowApp());
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
 
     // Tap search icon
     await tester.tap(find.byIcon(Icons.search));
