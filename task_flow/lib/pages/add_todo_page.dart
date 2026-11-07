@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/todo_item.dart';
+import 'categories_page.dart';
 
 class AddTodoPage extends StatefulWidget {
   const AddTodoPage({super.key});
@@ -12,11 +13,15 @@ class AddTodoPage extends StatefulWidget {
 class _AddTodoPageState extends State<AddTodoPage> {
   late final TextEditingController _controller;
   String _selectedPriority = 'Medium';
+  String _selectedCategory = 'General';
 
   @override
   void initState() {
     _controller = TextEditingController();
     super.initState();
+    CategoriesPage.loadCustomCategoriesFromPrefs().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -32,6 +37,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
       final newItem = TodoItem(
         title: text,
         priority: _selectedPriority,
+        category: _selectedCategory,
       );
       Navigator.of(context).pop(newItem);
     }
@@ -111,6 +117,86 @@ class _AddTodoPageState extends State<AddTodoPage> {
               onSelectionChanged: (newSelection) {
                 setState(() => _selectedPriority = newSelection.first);
               },
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Select Category',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                ...CategoriesPage.sharedCategories.map((catConfig) {
+                  final cat = catConfig.name;
+                  return ChoiceChip(
+                    avatar: Icon(
+                      catConfig.icon,
+                      size: 15,
+                      color: catConfig.color,
+                    ),
+                    label: Text(cat),
+                    selected: _selectedCategory == cat,
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() => _selectedCategory = cat);
+                      }
+                    },
+                  );
+                }),
+                ActionChip(
+                  avatar: const Icon(Icons.add_rounded, size: 16),
+                  label: const Text('+ New Category'),
+                  onPressed: () async {
+                    final newCatCtrl = TextEditingController();
+                    final createdName = await showDialog<String>(
+                      context: context,
+                      builder: (dialogCtx) => AlertDialog(
+                        title: const Text('Add New Category'),
+                        content: TextField(
+                          controller: newCatCtrl,
+                          autofocus: true,
+                          textCapitalization: TextCapitalization.words,
+                          decoration: const InputDecoration(
+                            labelText: 'Category Name',
+                            hintText: 'e.g., Shopping, Fitness',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(dialogCtx).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () {
+                              final val = newCatCtrl.text.trim();
+                              if (val.isNotEmpty) {
+                                Navigator.of(dialogCtx).pop(val);
+                              }
+                            },
+                            child: const Text('Add'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (createdName != null && createdName.isNotEmpty) {
+                      await CategoriesPage.addSharedCategory(
+                        CategoryConfig(
+                          name: createdName,
+                          icon: Icons.folder_special_rounded,
+                          color: Colors.indigo,
+                        ),
+                      );
+                      setState(() => _selectedCategory = createdName);
+                    }
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 32),
             SizedBox(

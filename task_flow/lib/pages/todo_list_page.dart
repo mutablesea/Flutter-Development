@@ -271,6 +271,7 @@ class _TodoListPageState extends State<TodoListPage> {
     final completed = _tasks.where((t) => t.isDone).length;
     final progress = total == 0 ? 0.0 : completed / total;
     final displayedTasks = _filteredTasks;
+    final isMobile = MediaQuery.sizeOf(context).width < 600;
 
     return Scaffold(
       drawer: Drawer(
@@ -329,6 +330,26 @@ class _TodoListPageState extends State<TodoListPage> {
                 title: const Text('All Tasks'),
                 selected: true,
                 onTap: () => Navigator.of(context).pop(),
+              ),
+              ListTile(
+                leading: const Icon(Icons.search_rounded),
+                title: const Text('Search & Filters'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openSearchPage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.bar_chart_rounded),
+                title: const Text('Productivity Stats'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => StatsPage(tasks: _tasks),
+                    ),
+                  );
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.calendar_month_rounded),
@@ -516,56 +537,72 @@ class _TodoListPageState extends State<TodoListPage> {
                   );
                 },
               ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.settings_outlined),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _openSettingsPage();
+                },
+              ),
             ],
           ),
         ),
       ),
       appBar: AppBar(
+        centerTitle: false,
+        titleSpacing: 4,
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
               'figures/task_flow_logo.png',
-              width: 28,
-              height: 28,
+              width: 26,
+              height: 26,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) =>
                   const SizedBox.shrink(),
             ),
             const SizedBox(width: 8),
-            const Text(
-              'Task Flow',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            const Flexible(
+              child: Text(
+                'Task Flow',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_month_outlined),
-            tooltip: 'Calendar Schedule',
-            onPressed: _openCalendarPage,
-          ),
-          IconButton(
             icon: const Icon(Icons.search),
             tooltip: 'Search & Filters',
             onPressed: _openSearchPage,
           ),
-          IconButton(
-            icon: const Icon(Icons.bar_chart_rounded),
-            tooltip: 'Productivity Stats',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => StatsPage(tasks: _tasks),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Settings',
-            onPressed: _openSettingsPage,
-          ),
+          if (!isMobile) ...[
+            IconButton(
+              icon: const Icon(Icons.calendar_month_outlined),
+              tooltip: 'Calendar Schedule',
+              onPressed: _openCalendarPage,
+            ),
+            IconButton(
+              icon: const Icon(Icons.bar_chart_rounded),
+              tooltip: 'Productivity Stats',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => StatsPage(tasks: _tasks),
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              tooltip: 'Settings',
+              onPressed: _openSettingsPage,
+            ),
+          ],
         ],
       ),
       body: Column(

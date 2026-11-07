@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/todo_item.dart';
 import 'task_details_page.dart';
@@ -29,12 +30,8 @@ class CategoriesPage extends StatefulWidget {
     this.onTasksUpdated,
   });
 
-  @override
-  State<CategoriesPage> createState() => _CategoriesPageState();
-}
-
-class _CategoriesPageState extends State<CategoriesPage> {
-  final List<CategoryConfig> _categories = [
+  /// Shared list of categories across CalendarPage, CategoriesPage, and AddTodoPage.
+  static final List<CategoryConfig> sharedCategories = [
     const CategoryConfig(
       name: 'General',
       icon: Icons.inbox_rounded,
@@ -66,6 +63,45 @@ class _CategoriesPageState extends State<CategoriesPage> {
       isDefault: true,
     ),
   ];
+
+  static Future<void> loadCustomCategoriesFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedNames = prefs.getStringList('custom_category_names') ?? [];
+    for (final name in savedNames) {
+      if (!sharedCategories.any(
+        (c) => c.name.toLowerCase() == name.toLowerCase(),
+      )) {
+        sharedCategories.add(
+          CategoryConfig(
+            name: name,
+            icon: Icons.folder_special_rounded,
+            color: Colors.indigo,
+          ),
+        );
+      }
+    }
+  }
+
+  static Future<void> addSharedCategory(CategoryConfig config) async {
+    if (!sharedCategories.any(
+      (c) => c.name.toLowerCase() == config.name.toLowerCase(),
+    )) {
+      sharedCategories.add(config);
+      final prefs = await SharedPreferences.getInstance();
+      final customNames = sharedCategories
+          .where((c) => !c.isDefault)
+          .map((c) => c.name)
+          .toList();
+      await prefs.setStringList('custom_category_names', customNames);
+    }
+  }
+
+  @override
+  State<CategoriesPage> createState() => _CategoriesPageState();
+}
+
+class _CategoriesPageState extends State<CategoriesPage> {
+  List<CategoryConfig> get _categories => CategoriesPage.sharedCategories;
 
   late List<TodoItem> _localTasks;
   String _selectedCategory = 'All';
@@ -107,6 +143,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
         );
       }
     }
+    CategoriesPage.loadCustomCategoriesFromPrefs().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   List<TodoItem> _tasksForCategory(String categoryName) {
@@ -239,14 +278,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       );
                       return;
                     }
+                    final newCat = CategoryConfig(
+                      name: name,
+                      icon: chosenIcon,
+                      color: chosenColor,
+                    );
+                    CategoriesPage.addSharedCategory(newCat);
                     setState(() {
-                      _categories.add(
-                        CategoryConfig(
-                          name: name,
-                          icon: chosenIcon,
-                          color: chosenColor,
-                        ),
-                      );
                       _selectedCategory = name;
                     });
                     Navigator.of(ctx).pop();

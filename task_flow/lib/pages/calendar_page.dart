@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/todo_item.dart';
+import 'categories_page.dart';
 import 'task_details_page.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -78,6 +79,10 @@ class _CalendarPageState extends State<CalendarPage> {
             dueDate: _selectedDate.add(const Duration(days: 1)),
           ),
         ];
+
+    CategoriesPage.loadCustomCategoriesFromPrefs().then((_) {
+      if (mounted) setState(() {});
+    });
   }
 
   bool _isSameDay(DateTime a, DateTime b) {
@@ -201,16 +206,76 @@ class _CalendarPageState extends State<CalendarPage> {
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
-                    children: ['General', 'Work', 'Personal', 'Study', 'Health']
-                        .map((cat) {
-                      return ChoiceChip(
-                        label: Text(cat),
-                        selected: selectedCategory == cat,
-                        onSelected: (s) {
-                          if (s) setModalState(() => selectedCategory = cat);
+                    runSpacing: 6,
+                    children: [
+                      ...CategoriesPage.sharedCategories.map((catConfig) {
+                        final cat = catConfig.name;
+                        return ChoiceChip(
+                          avatar: Icon(
+                            catConfig.icon,
+                            size: 15,
+                            color: catConfig.color,
+                          ),
+                          label: Text(cat),
+                          selected: selectedCategory == cat,
+                          onSelected: (s) {
+                            if (s) {
+                              setModalState(() => selectedCategory = cat);
+                            }
+                          },
+                        );
+                      }),
+                      ActionChip(
+                        avatar: const Icon(Icons.add_rounded, size: 16),
+                        label: const Text('+ New Category'),
+                        onPressed: () async {
+                          final newCatCtrl = TextEditingController();
+                          final createdName = await showDialog<String>(
+                            context: context,
+                            builder: (dialogCtx) => AlertDialog(
+                              title: const Text('Add New Category'),
+                              content: TextField(
+                                controller: newCatCtrl,
+                                autofocus: true,
+                                textCapitalization: TextCapitalization.words,
+                                decoration: const InputDecoration(
+                                  labelText: 'Category Name',
+                                  hintText: 'e.g., Shopping, Fitness',
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(dialogCtx).pop(),
+                                  child: const Text('Cancel'),
+                                ),
+                                FilledButton(
+                                  onPressed: () {
+                                    final val = newCatCtrl.text.trim();
+                                    if (val.isNotEmpty) {
+                                      Navigator.of(dialogCtx).pop(val);
+                                    }
+                                  },
+                                  child: const Text('Add'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (createdName != null && createdName.isNotEmpty) {
+                            await CategoriesPage.addSharedCategory(
+                              CategoryConfig(
+                                name: createdName,
+                                icon: Icons.folder_special_rounded,
+                                color: Colors.indigo,
+                              ),
+                            );
+                            setModalState(() => selectedCategory = createdName);
+                            setState(() {});
+                          }
                         },
-                      );
-                    }).toList(),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
@@ -277,316 +342,324 @@ class _CalendarPageState extends State<CalendarPage> {
           const SizedBox(width: 4),
         ],
       ),
-      body: Column(
-        children: [
-          // Calendar Card
-          Card(
-            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            elevation: 1,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(14.0),
-              child: Column(
-                children: [
-                  // Month navigation header
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.chevron_left_rounded),
-                        tooltip: 'Previous Month',
-                        onPressed: () => _changeMonth(-1),
-                      ),
-                      Text(
-                        '${_monthNames[_focusedMonth.month - 1]} ${_focusedMonth.year}',
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
+      body: Scrollbar(
+        thumbVisibility: true,
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 28),
+          children: [
+            // Calendar Card
+            Card(
+              margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14.0,
+                  vertical: 10.0,
+                ),
+                child: Column(
+                  children: [
+                    // Month navigation header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left_rounded),
+                          tooltip: 'Previous Month',
+                          onPressed: () => _changeMonth(-1),
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.chevron_right_rounded),
-                        tooltip: 'Next Month',
-                        onPressed: () => _changeMonth(1),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
+                        Text(
+                          '${_monthNames[_focusedMonth.month - 1]} ${_focusedMonth.year}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right_rounded),
+                          tooltip: 'Next Month',
+                          onPressed: () => _changeMonth(1),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
 
-                  // Weekday headers
-                  Row(
-                    children: _weekDays
-                        .map(
-                          (day) => Expanded(
-                            child: Center(
-                              child: Text(
-                                day,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: theme.colorScheme.onSurfaceVariant,
+                    // Weekday headers
+                    Row(
+                      children: _weekDays
+                          .map(
+                            (day) => Expanded(
+                              child: Center(
+                                child: Text(
+                                  day,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Days Grid
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: firstWeekday + daysInMonth,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 7,
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 4,
-                      childAspectRatio: 1.05,
+                          )
+                          .toList(),
                     ),
-                    itemBuilder: (context, index) {
-                      if (index < firstWeekday) {
-                        return const SizedBox.shrink();
-                      }
-                      final dayNum = index - firstWeekday + 1;
-                      final date = DateTime(
-                        _focusedMonth.year,
-                        _focusedMonth.month,
-                        dayNum,
-                      );
-                      final isSelected = _isSameDay(date, _selectedDate);
-                      final isToday = _isSameDay(date, today);
-                      final dayTasks = _tasksForDay(date);
+                    const SizedBox(height: 6),
 
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          setState(() => _selectedDate = date);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? theme.colorScheme.primary
-                                : isToday
-                                    ? theme.colorScheme.primaryContainer
-                                        .withValues(alpha: 0.5)
-                                    : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            border: isToday && !isSelected
-                                ? Border.all(
-                                    color: theme.colorScheme.primary,
-                                    width: 1.2,
-                                  )
-                                : null,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '$dayNum',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: isSelected || isToday
-                                      ? FontWeight.bold
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? theme.colorScheme.onPrimary
-                                      : theme.colorScheme.onSurface,
+                    // Days Grid with compact fixed cell height
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: firstWeekday + daysInMonth,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 7,
+                        mainAxisSpacing: 4,
+                        crossAxisSpacing: 4,
+                        mainAxisExtent: 42,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index < firstWeekday) {
+                          return const SizedBox.shrink();
+                        }
+                        final dayNum = index - firstWeekday + 1;
+                        final date = DateTime(
+                          _focusedMonth.year,
+                          _focusedMonth.month,
+                          dayNum,
+                        );
+                        final isSelected = _isSameDay(date, _selectedDate);
+                        final isToday = _isSameDay(date, today);
+                        final dayTasks = _tasksForDay(date);
+
+                        return InkWell(
+                          borderRadius: BorderRadius.circular(10),
+                          onTap: () {
+                            setState(() => _selectedDate = date);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : isToday
+                                      ? theme.colorScheme.primaryContainer
+                                          .withValues(alpha: 0.5)
+                                      : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10),
+                              border: isToday && !isSelected
+                                  ? Border.all(
+                                      color: theme.colorScheme.primary,
+                                      width: 1.2,
+                                    )
+                                  : null,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '$dayNum',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: isSelected || isToday
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                    color: isSelected
+                                        ? theme.colorScheme.onPrimary
+                                        : theme.colorScheme.onSurface,
+                                  ),
                                 ),
-                              ),
-                              if (dayTasks.isNotEmpty) ...[
-                                const SizedBox(height: 3),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: dayTasks.take(3).map((t) {
-                                    return Container(
-                                      width: 5,
-                                      height: 5,
-                                      margin: const EdgeInsets.symmetric(
-                                        horizontal: 1,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: isSelected
-                                            ? theme.colorScheme.onPrimary
-                                            : _getPriorityColor(t.priority),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
+                                if (dayTasks.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: dayTasks.take(3).map((t) {
+                                      return Container(
+                                        width: 5,
+                                        height: 5,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: isSelected
+                                              ? theme.colorScheme.onPrimary
+                                              : _getPriorityColor(t.priority),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Selected Date Header Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${_monthNames[_selectedDate.month - 1]} ${_selectedDate.day}, ${_selectedDate.year}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
+                      ),
+                      Text(
+                        selectedTasks.isEmpty
+                            ? 'No tasks scheduled'
+                            : '$completedCount of ${selectedTasks.length} completed',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                  FilledButton.tonalIcon(
+                    onPressed: _showAddTaskForDateSheet,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add Task'),
                   ),
                 ],
               ),
             ),
-          ),
 
-          // Selected Date Header Bar
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            // Tasks List for Selected Date
+            if (selectedTasks.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 36),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      '${_monthNames[_selectedDate.month - 1]} ${_selectedDate.day}, ${_selectedDate.year}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    Icon(
+                      Icons.event_note_rounded,
+                      size: 52,
+                      color:
+                          theme.colorScheme.outline.withValues(alpha: 0.45),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Nothing scheduled for this day',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
+                    const SizedBox(height: 4),
                     Text(
-                      selectedTasks.isEmpty
-                          ? 'No tasks scheduled'
-                          : '$completedCount of ${selectedTasks.length} completed',
+                      'Tap "Add Task" to schedule an item on this date.',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 13,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
-                FilledButton.tonalIcon(
-                  onPressed: _showAddTaskForDateSheet,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Add Task'),
-                ),
-              ],
-            ),
-          ),
+              )
+            else
+              ...selectedTasks.map((task) {
+                final pColor = _getPriorityColor(task.priority);
 
-          // Tasks List for Selected Date
-          Expanded(
-            child: selectedTasks.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.event_note_rounded,
-                          size: 56,
-                          color: theme.colorScheme.outline
-                              .withValues(alpha: 0.45),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'Nothing scheduled for this day',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Tap "Add Task" to schedule an item on this date.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-                    itemCount: selectedTasks.length,
-                    itemBuilder: (context, index) {
-                      final task = selectedTasks[index];
-                      final pColor = _getPriorityColor(task.priority);
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          side: BorderSide(
-                            color: task.isDone
-                                ? Colors.transparent
-                                : pColor.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: ListTile(
-                          leading: Checkbox(
-                            value: task.isDone,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            onChanged: (val) {
-                              setState(() {
-                                task.isDone = val ?? false;
-                              });
-                              widget.onTasksUpdated?.call();
-                            },
-                          ),
-                          title: Text(
-                            task.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              decoration: task.isDone
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                            ),
-                          ),
-                          subtitle: Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Row(
-                              children: [
-                                Icon(Icons.flag, size: 13, color: pColor),
-                                const SizedBox(width: 4),
-                                Text(
-                                  task.priority,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: pColor,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Icon(
-                                  Icons.folder_outlined,
-                                  size: 13,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  task.category,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          trailing: const Icon(Icons.chevron_right_rounded),
-                          onTap: () async {
-                            final updated =
-                                await Navigator.of(context).push<bool>(
-                              MaterialPageRoute(
-                                builder: (_) => TaskDetailsPage(task: task),
-                              ),
-                            );
-                            if (updated == true) {
-                              setState(() {});
-                              widget.onTasksUpdated?.call();
-                            }
-                          },
-                        ),
-                      );
-                    },
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
                   ),
-          ),
-        ],
+                  child: Card(
+                    margin: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: BorderSide(
+                        color: task.isDone
+                            ? Colors.transparent
+                            : pColor.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: ListTile(
+                      leading: Checkbox(
+                        value: task.isDone,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        onChanged: (val) {
+                          setState(() {
+                            task.isDone = val ?? false;
+                          });
+                          widget.onTasksUpdated?.call();
+                        },
+                      ),
+                      title: Text(
+                        task.title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          decoration: task.isDone
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            Icon(Icons.flag, size: 13, color: pColor),
+                            const SizedBox(width: 4),
+                            Text(
+                              task.priority,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: pColor,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Icon(
+                              Icons.folder_outlined,
+                              size: 13,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              task.category,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () async {
+                        final updated =
+                            await Navigator.of(context).push<bool>(
+                          MaterialPageRoute(
+                            builder: (_) => TaskDetailsPage(task: task),
+                          ),
+                        );
+                        if (updated == true) {
+                          setState(() {});
+                          widget.onTasksUpdated?.call();
+                        }
+                      },
+                    ),
+                  ),
+                );
+              }),
+          ],
+        ),
       ),
     );
   }
