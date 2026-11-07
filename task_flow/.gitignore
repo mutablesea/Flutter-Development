@@ -418,3 +418,15 @@ coverage/
 
 # Retain project dependency lock file for reproducible builds across all machines
 !pubspec.lock
+
+# ==============================================================================
+# PROJECT DOCUMENTATION & SCREENSHOT OUTPUTS
+# ==============================================================================
+
+# Exclude local LaTeX documentation directory from Git tracking
+documentation/
+/documentation/
+
+# Keep screenshot output directory tracked in Git (commented out intentionally)
+# output/
+# /output/
