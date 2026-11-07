@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 
 import '../models/todo_item.dart';
 import 'add_todo_page.dart';
+import 'backup_sync_page.dart';
 import 'calendar_page.dart';
 import 'categories_page.dart';
+import 'notifications_page.dart';
 import 'onboarding_page.dart';
+import 'pomodoro_page.dart';
+import 'profile_page.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
 import 'splash_page.dart';
 import 'stats_page.dart';
+import 'tags_manage_page.dart';
 import 'task_details_page.dart';
 import 'trash_page.dart';
 
@@ -338,6 +343,71 @@ class _TodoListPageState extends State<TodoListPage> {
                 onTap: () {
                   Navigator.of(context).pop();
                   _openTrashPage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person_outline_rounded),
+                title: const Text('My Profile'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ProfilePage(tasks: _tasks),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.timer_outlined),
+                title: const Text('Pomodoro Focus'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PomodoroPage(tasks: _tasks),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.label_outline_rounded),
+                title: const Text('Manage Tags'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context)
+                      .push(
+                        MaterialPageRoute(
+                          builder: (_) => TagsManagePage(
+                            tasks: _tasks,
+                            onTasksUpdated: () => setState(() {}),
+                          ),
+                        ),
+                      )
+                      .then((_) => setState(() {}));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.notifications_none_rounded),
+                title: const Text('Notifications'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cloud_sync_outlined),
+                title: const Text('Backup & Sync'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => BackupSyncPage(tasks: _tasks),
+                    ),
+                  );
                 },
               ),
               const Divider(),
