@@ -21,6 +21,8 @@
 
 # macOS directory metadata
 .DS_Store
+**/.DS_Store
+
 
 # Atom editor configuration folder
 .atom/
