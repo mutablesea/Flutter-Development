@@ -5,12 +5,17 @@ import 'add_todo_page.dart';
 import 'backup_sync_page.dart';
 import 'calendar_page.dart';
 import 'categories_page.dart';
+import 'collaborators_page.dart';
+import 'feedback_support_page.dart';
+import 'login_page.dart';
 import 'notifications_page.dart';
 import 'onboarding_page.dart';
 import 'pomodoro_page.dart';
 import 'profile_page.dart';
+import 'routines_page.dart';
 import 'search_page.dart';
 import 'settings_page.dart';
+import 'signup_page.dart';
 import 'splash_page.dart';
 import 'stats_page.dart';
 import 'tags_manage_page.dart';
@@ -406,6 +411,67 @@ class _TodoListPageState extends State<TodoListPage> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => BackupSyncPage(tasks: _tasks),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.repeat_rounded),
+                title: const Text('Daily Routines'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const RoutinesPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.family_restroom_rounded),
+                title: const Text('Family & Collaborators'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const CollaboratorsPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.mail_outline_rounded),
+                title: const Text('Feedback & Support'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const FeedbackSupportPage(),
+                    ),
+                  );
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.login_rounded),
+                title: const Text('Log In'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const LoginPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.person_add_alt_1_rounded),
+                title: const Text('Create Account (Sign Up)'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const SignupPage(),
                     ),
                   );
                 },

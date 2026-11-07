@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/todo_item.dart';
+import 'login_page.dart';
+import 'signup_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final List<TodoItem>? tasks;
@@ -12,28 +15,15 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String _name = 'Mutant Freeman';
-  String _username = 'mutant';
-  String _email = 'mutant@gmail.com';
-  String _role = 'Productive Creator • Flutter Developer';
+  bool _isLoading = true;
+  bool _isLoggedIn = false;
+
+  String _name = '';
+  String _username = '';
+  String _email = '';
+  String _role = 'Productive Creator • Task Flow Member';
   int _dailyGoal = 5;
   int _selectedAvatarIndex = 0;
-
-  void _switchDemoUser(String username) {
-    setState(() {
-      if (username == 'mutant') {
-        _name = 'Mutant Freeman';
-        _username = 'mutant';
-        _email = 'mutant@gmail.com';
-        _selectedAvatarIndex = 0;
-      } else {
-        _name = 'Neon Saab';
-        _username = 'neon';
-        _email = 'neon@gmail.com';
-        _selectedAvatarIndex = 1;
-      }
-    });
-  }
 
   static const List<IconData> _avatarIcons = [
     Icons.person_rounded,
@@ -42,6 +32,70 @@ class _ProfilePageState extends State<ProfilePage> {
     Icons.code_rounded,
     Icons.auto_awesome_rounded,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserFromPrefs();
+  }
+
+  Future<void> _loadUserFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final loggedIn = prefs.getBool('auth_is_logged_in') ?? false;
+
+    if (!mounted) return;
+    setState(() {
+      _isLoggedIn = loggedIn;
+      if (loggedIn) {
+        _name = prefs.getString('auth_full_name') ?? '';
+        _username = prefs.getString('auth_username') ?? '';
+        _email = prefs.getString('auth_email') ?? '';
+        _role = prefs.getString('auth_role') ??
+            'Productive Creator • Task Flow Member';
+        _dailyGoal = prefs.getInt('auth_daily_goal') ?? 5;
+        _selectedAvatarIndex = prefs.getInt('auth_avatar_index') ?? 0;
+      } else {
+        _name = '';
+        _username = '';
+        _email = '';
+      }
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _saveProfileChangesToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_full_name', _name);
+    await prefs.setString('auth_username', _username);
+    await prefs.setString('auth_email', _email);
+    await prefs.setString('auth_role', _role);
+    await prefs.setInt('auth_daily_goal', _dailyGoal);
+    await prefs.setInt('auth_avatar_index', _selectedAvatarIndex);
+  }
+
+  Future<void> _handleLogout() async {
+    await LoginPage.clearSessionFromPrefs();
+    if (!mounted) return;
+    await _loadUserFromPrefs();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Logged out successfully.')),
+    );
+  }
+
+  Future<void> _openLoginPage() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const LoginPage()),
+    );
+    await _loadUserFromPrefs();
+  }
+
+  Future<void> _openSignupPage() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const SignupPage()),
+    );
+    await _loadUserFromPrefs();
+  }
 
   void _showEditProfileDialog() {
     final nameCtrl = TextEditingController(text: _name);
@@ -195,7 +249,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       height: 48,
                       child: FilledButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             if (nameCtrl.text.trim().isNotEmpty) {
                               _name = nameCtrl.text.trim();
@@ -213,10 +267,13 @@ class _ProfilePageState extends State<ProfilePage> {
                             _dailyGoal = tempGoal;
                             _selectedAvatarIndex = tempAvatar;
                           });
+                          await _saveProfileChangesToPrefs();
+                          if (!ctx.mounted) return;
                           Navigator.of(ctx).pop();
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Profile updated successfully!'),
+                              content: Text('Profile saved locally!'),
                             ),
                           );
                         },
@@ -237,6 +294,85 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('My Profile')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // If not logged in yet, show prompt to Log In first
+    if (!_isLoggedIn) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('My Profile'),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(28.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 46,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    Icons.person_off_outlined,
+                    size: 44,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'No Active User Profile',
+                  style: TextStyle(
+                    fontSize: 21,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Please log in to your account first to view your profile, daily goals, and achievements.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: FilledButton.icon(
+                    onPressed: _openLoginPage,
+                    icon: const Icon(Icons.login_rounded),
+                    label: const Text(
+                      'Log In to Account',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    onPressed: _openSignupPage,
+                    icon: const Icon(Icons.person_add_alt_1_rounded),
+                    label: const Text('Create New Account'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final taskList = widget.tasks ?? [];
     final totalTasks = taskList.isEmpty ? 12 : taskList.length;
     final completedTasks =
@@ -253,6 +389,11 @@ class _ProfilePageState extends State<ProfilePage> {
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit Profile',
             onPressed: _showEditProfileDialog,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded),
+            tooltip: 'Log Out',
+            onPressed: _handleLogout,
           ),
         ],
       ),
@@ -312,24 +453,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      ChoiceChip(
-                        avatar: const Icon(Icons.person, size: 15),
-                        label: const Text('Mutant Freeman (@mutant)'),
-                        selected: _username == 'mutant',
-                        onSelected: (_) => _switchDemoUser('mutant'),
-                      ),
-                      ChoiceChip(
-                        avatar: const Icon(Icons.person_outline, size: 15),
-                        label: const Text('Neon Saab (@neon)'),
-                        selected: _username == 'neon',
-                        onSelected: (_) => _switchDemoUser('neon'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -494,6 +617,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 unlocked: false,
               ),
             ],
+          ),
+
+          const SizedBox(height: 20),
+
+          OutlinedButton.icon(
+            onPressed: _handleLogout,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: theme.colorScheme.error,
+              minimumSize: const Size(double.infinity, 46),
+            ),
+            icon: const Icon(Icons.logout_rounded),
+            label: const Text('Log Out'),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'onboarding_page.dart';
@@ -11,7 +12,7 @@ class SplashPage extends StatefulWidget {
   const SplashPage({
     super.key,
     this.navigateToOnboarding = false,
-    this.delay = const Duration(seconds: 3),
+    this.delay = const Duration(seconds: 2),
   });
 
   @override
@@ -38,10 +39,7 @@ class _SplashPageState extends State<SplashPage>
       curve: Curves.easeOutBack,
     );
 
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
     _controller.forward();
 
@@ -53,9 +51,8 @@ class _SplashPageState extends State<SplashPage>
     final destination = widget.navigateToOnboarding
         ? const OnboardingPage()
         : const TodoListPage();
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => destination),
-    );
+    Navigator.of(context)
+        .pushReplacement(MaterialPageRoute(builder: (_) => destination));
   }
 
   @override
@@ -77,10 +74,7 @@ class _SplashPageState extends State<SplashPage>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              colorScheme.primary,
-              colorScheme.tertiary,
-            ],
+            colors: [colorScheme.primary, colorScheme.tertiary],
           ),
         ),
         child: SafeArea(
@@ -97,8 +91,9 @@ class _SplashPageState extends State<SplashPage>
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: colorScheme.onPrimary,
-                      backgroundColor:
-                          colorScheme.onPrimary.withValues(alpha: 0.15),
+                      backgroundColor: colorScheme.onPrimary.withValues(
+                        alpha: 0.15,
+                      ),
                     ),
                     icon: const Icon(Icons.arrow_forward_rounded, size: 18),
                     label: const Text('Continue'),
@@ -200,4 +195,3 @@ class _SplashPageState extends State<SplashPage>
     );
   }
 }
-
