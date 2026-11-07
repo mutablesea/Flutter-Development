@@ -178,16 +178,21 @@ class _LoginPageState extends State<LoginPage> {
               // App Logo & Welcome
               Center(
                 child: Container(
-                  width: 72,
-                  height: 72,
+                  width: 78,
+                  height: 78,
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Icon(
-                    Icons.lock_person_rounded,
-                    size: 38,
-                    color: theme.colorScheme.primary,
+                  child: Image.asset(
+                    'figures/task_flow_logo.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.lock_person_rounded,
+                      size: 38,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
               ),

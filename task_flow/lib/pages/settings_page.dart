@@ -354,11 +354,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 child: Column(
                   children: [
-                    const ListTile(
-                      leading: Icon(Icons.check_box_rounded,
-                          color: Colors.deepPurple),
-                      title: Text('Task Flow'),
-                      subtitle: Text('Version 1.2.0 • Built with Flutter'),
+                    ListTile(
+                      leading: Image.asset(
+                        'figures/task_flow_logo.png',
+                        width: 32,
+                        height: 32,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                          Icons.check_box_rounded,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      title: const Text('Task Flow'),
+                      subtitle: const Text('Version 1.2.0 • Built with Flutter'),
                     ),
                     const Divider(height: 1),
                     ListTile(

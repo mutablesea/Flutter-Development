@@ -109,8 +109,9 @@ class _SplashPageState extends State<SplashPage>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 108,
-                        height: 108,
+                        width: 116,
+                        height: 116,
+                        padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: colorScheme.onPrimary,
                           borderRadius: BorderRadius.circular(28),
@@ -122,10 +123,17 @@ class _SplashPageState extends State<SplashPage>
                             ),
                           ],
                         ),
-                        child: Icon(
-                          Icons.task_alt_rounded,
-                          size: 62,
-                          color: colorScheme.primary,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.asset(
+                            'figures/task_flow_logo.png',
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) => Icon(
+                              Icons.task_alt_rounded,
+                              size: 62,
+                              color: colorScheme.primary,
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),

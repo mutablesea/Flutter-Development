@@ -118,16 +118,21 @@ class _SignupPageState extends State<SignupPage> {
             children: [
               Center(
                 child: Container(
-                  width: 68,
-                  height: 68,
+                  width: 74,
+                  height: 74,
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: Icon(
-                    Icons.person_add_alt_1_rounded,
-                    size: 36,
-                    color: theme.colorScheme.primary,
+                  child: Image.asset(
+                    'figures/task_flow_logo.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.person_add_alt_1_rounded,
+                      size: 36,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
               ),

@@ -283,15 +283,21 @@ class _TodoListPageState extends State<TodoListPage> {
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
+                      width: 48,
+                      height: 48,
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: Icon(
-                        Icons.task_alt_rounded,
-                        color: theme.colorScheme.primary,
-                        size: 28,
+                      child: Image.asset(
+                        'figures/task_flow_logo.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.task_alt_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 28,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -515,9 +521,23 @@ class _TodoListPageState extends State<TodoListPage> {
         ),
       ),
       appBar: AppBar(
-        title: const Text(
-          'Task Flow',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'figures/task_flow_logo.png',
+              width: 28,
+              height: 28,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  const SizedBox.shrink(),
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Task Flow',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         actions: [
           IconButton(
