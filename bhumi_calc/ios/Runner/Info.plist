@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Bhumi Calc needs camera access to scan and attach Khatian land documents.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Bhumi Calc needs photo library access to attach scanned Khatian land documents.</string>
 </dict>
 </plist>
