@@ -7,6 +7,13 @@ const kGoldTop = Color(0xFFE9D39B);
 const kGoldBottom = Color(0xFFF7EFD9);
 const kGreen = Color(0xFF1B8A2F);
 
+/// Global state for the logged-in user's business name & phone number
+final ValueNotifier<String> businessNameNotifier =
+    ValueNotifier<String>('আমার ব্যবসা');
+final ValueNotifier<String> userPhoneNotifier = ValueNotifier<String>('');
+final ValueNotifier<String> businessTypeNotifier =
+    ValueNotifier<String>('মুদি বা জেনারেল স্টোর');
+
 ThemeData appTheme() {
   final base = ThemeData(
     useMaterial3: true,

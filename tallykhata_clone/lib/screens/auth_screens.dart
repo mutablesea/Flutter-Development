@@ -4,39 +4,7 @@ import '../routes.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
-/// SS 0,1 : Splash. 2 sec por login e jabe.
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(seconds: 2),
-        () => Navigator.pushReplacementNamed(context, Routes.login)); // back dile splash e ferot ashbe na
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Column(children: [
-          const Spacer(flex: 3),
-          Container(
-            width: 110, height: 140,
-            decoration: BoxDecoration(color: kRed, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.menu_book, color: Colors.white, size: 60),
-          ),
-          const SizedBox(height: 12),
-          const Text('টালিখাতা', style: TextStyle(fontSize: 32, color: kRed, fontWeight: FontWeight.bold)),
-          const Spacer(flex: 3),
-          const Padding(padding: EdgeInsets.only(bottom: 40), child: Text('নিরাপদ ও সহজ')),
-        ]),
-      );
-}
-
-/// SS 2,3,4,5 : Onboarding carousel (PageView) + phone number field + পরবর্তী button
+/// Onboarding carousel (PageView) with phone number login/registration input.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
   @override
@@ -49,15 +17,27 @@ class _LoginScreenState extends State<LoginScreen> {
   String _phone = '';
   Timer? _timer;
   final _slides = const [
-    ('QR কোড-এ পেমেন্ট নিন বিকাশ, রকেট সহ সকল ব্যাংক অ্যাপ থেকে।', Color(0xFFFBE0E0)),
-    ('ট্রান্সফার করুন নগদ, রকেট বা ব্যাংক একাউন্টে।', Color(0xFFFCE9D9)),
-    ('টালিখাতায় লেনদেন ১০০% নিরাপদ।', Color(0xFFDDF5DD)),
+    (
+      'QR কোড-এ পেমেন্ট নিন বিকাশ, রকেট সহ সকল ব্যাংক অ্যাপ থেকে।',
+      'assets/images/tallykhata_logo5.jpg',
+      Color(0xFFFDF0ED),
+    ),
+    (
+      'ট্রান্সফার করুন নগদ, রকেট বা ব্যাংক একাউন্টে।',
+      'assets/images/tallykhata_logo6.jpg',
+      Color(0xFFFEF3E8),
+    ),
+    (
+      'টালিখাতায় লেনদেন ১০০% নিরাপদ।',
+      'assets/images/tallykhata_logo7.jpg',
+      Color(0xFFEDFAEE),
+    ),
   ];
 
   @override
   void initState() {
     super.initState();
-    // auto slide
+    // Auto-advance carousel slides every 3 seconds
     _timer = Timer.periodic(const Duration(seconds: 3), (_) {
       if (!_pageCtrl.hasClients) return;
       _pageCtrl.animateToPage((_page + 1) % _slides.length,
@@ -79,16 +59,33 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Column(children: [
-          // upore carousel
+          // Top onboarding carousel
           SizedBox(
             height: 300,
             child: PageView.builder(
               controller: _pageCtrl, itemCount: _slides.length,
               onPageChanged: (i) => setState(() => _page = i),
               itemBuilder: (_, i) => Container(
-                color: _slides[i].$2, padding: const EdgeInsets.all(24),
-                alignment: Alignment.bottomCenter,
-                child: Text(_slides[i].$1, textAlign: TextAlign.center, style: const TextStyle(fontSize: 16)),
+                color: _slides[i].$3,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Image.asset(
+                        _slides[i].$2,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                      child: Text(
+                        _slides[i].$1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -119,7 +116,12 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             child: Column(children: [
               PrimaryButton('পরবর্তী',
-                  onPressed: valid ? () => Navigator.pushReplacementNamed(context, Routes.businessName) : null),
+                  onPressed: valid
+                      ? () {
+                          userPhoneNotifier.value = _phone;
+                          Navigator.pushReplacementNamed(context, Routes.businessName);
+                        }
+                      : null),
               const SizedBox(height: 8),
               const Text('পরবর্তীতে যাওয়ার নির্দেশের মাধ্যমে আপনি টালিখাতার শর্তাবলীতে সম্মতি প্রদান করছেন।',
                   textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey)),
@@ -131,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-/// SS 6 : ব্যবসা প্রতিষ্ঠানের নাম দিন
+/// Screen for entering the business name during registration.
 class BusinessNameScreen extends StatefulWidget {
   const BusinessNameScreen({super.key});
   @override
@@ -152,14 +154,19 @@ class _BusinessNameScreenState extends State<BusinessNameScreen> {
               AppField('ব্যবসা প্রতিষ্ঠানের নাম', onChanged: (v) => setState(() => _name = v.trim())),
               const Spacer(),
               PrimaryButton('নিশ্চিত',
-                  onPressed: _name.isEmpty ? null : () => Navigator.pushReplacementNamed(context, Routes.welcome)),
+                  onPressed: _name.isEmpty
+                      ? null
+                      : () {
+                          businessNameNotifier.value = _name;
+                          Navigator.pushReplacementNamed(context, Routes.welcome);
+                        }),
             ]),
           ),
         ),
       );
 }
 
-/// SS 7 : অভিনন্দন! (auto jabe QR intro te)
+/// Welcome congratulation screen that automatically navigates to the QR introduction screen.
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
   @override
@@ -187,7 +194,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       );
 }
 
-/// SS 8,9 : টালিপে QR intro. fromHome=true hole (grid theke "QR কোড") back button thake.
+/// TallyPay QR introduction screen. Shows a back button when opened from the home screen ([fromHome] = true).
 class QrIntroScreen extends StatelessWidget {
   final bool fromHome;
   const QrIntroScreen({super.key, this.fromHome = false});
@@ -218,7 +225,7 @@ class QrIntroScreen extends StatelessWidget {
                 child: TextButton(
                   onPressed: () => fromHome
                       ? Navigator.pop(context)
-                      : Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false), // back e login e ferot jabe na
+                      : Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false), // Clear navigation stack so back button doesn't return to login
                   child: const Text('টালিখাতা ব্যবহার করবো', style: TextStyle(color: kRed, fontSize: 16)),
                 ),
               ),

@@ -11,7 +11,7 @@ const kBusinessTypes = [
   'টেইলার্স', 'অন্যান্য',
 ];
 
-/// SS 36-ish bottom sheet : ব্যবসার ধরণ (2 column grid). Selected value return kore.
+/// Bottom sheet displaying a 2-column grid of business types; returns the selected type.
 Future<String?> showBusinessTypeSheet(BuildContext context) => showModalBottomSheet<String>(
       context: context, isScrollControlled: true, backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
@@ -29,7 +29,7 @@ Future<String?> showBusinessTypeSheet(BuildContext context) => showModalBottomSh
               children: [
                 for (final t in kBusinessTypes)
                   InkWell(
-                    onTap: () => Navigator.pop(ctx, t), // tap korlei value niye sheet bondho
+                    onTap: () => Navigator.pop(ctx, t), // Return selected value and close bottom sheet
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
@@ -46,7 +46,7 @@ Future<String?> showBusinessTypeSheet(BuildContext context) => showModalBottomSh
       ),
     );
 
-/// SS 13 : নতুন ব্যবসা  (name + ধরণ picker)
+/// Screen to create a new business with business name and type selector.
 class NewBusinessScreen extends StatefulWidget {
   const NewBusinessScreen({super.key});
   @override
@@ -93,7 +93,7 @@ class _TypeTile extends StatelessWidget {
       );
 }
 
-/// SS 31 : ব্যবসার সেটিংস (3 ta option)
+/// Business settings screen with options to set primary business, edit, or delete business.
 class BusinessSettingsScreen extends StatelessWidget {
   const BusinessSettingsScreen({super.key});
   @override
@@ -126,7 +126,7 @@ class BusinessSettingsScreen extends StatelessWidget {
         ]),
       );
 
-  // SS 32 : primary business radio sheet
+  // Bottom sheet to select the primary business
   void _primarySheet(BuildContext context) => showModalBottomSheet(
         context: context, backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
@@ -134,15 +134,24 @@ class BusinessSettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Text('ব্যবসা সমূহ (১/৩)'),
-            RadioListTile(value: 0, groupValue: 0, onChanged: (_) {}, activeColor: kRed,
-                title: const Text('Imam Abu Tareq Grocery'), subtitle: const Text('কাস্টমার ০, সাপ্লায়ার ০ | মোট পাবো ০.০০')),
+            ValueListenableBuilder<String>(
+              valueListenable: businessNameNotifier,
+              builder: (_, name, _) => RadioListTile(
+                value: 0,
+                groupValue: 0,
+                onChanged: (_) {},
+                activeColor: kRed,
+                title: Text(name),
+                subtitle: const Text('কাস্টমার ০, সাপ্লায়ার ০ | মোট পাবো ০.০০'),
+              ),
+            ),
             PrimaryButton('পরবর্তী', onPressed: () => Navigator.pop(ctx)),
           ]),
         ),
       );
 }
 
-/// SS 33, 36 : ব্যবসা এডিট
+/// Screen to edit the current business name and business type.
 class BusinessEditScreen extends StatefulWidget {
   const BusinessEditScreen({super.key});
   @override
@@ -150,8 +159,15 @@ class BusinessEditScreen extends StatefulWidget {
 }
 
 class _BusinessEditScreenState extends State<BusinessEditScreen> {
-  final _name = TextEditingController(text: 'Imam Abu Tareq Grocery');
-  String _type = 'মুদি বা জেনারেল স্টোর';
+  late final TextEditingController _name =
+      TextEditingController(text: businessNameNotifier.value);
+  String _type = businessTypeNotifier.value;
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: backBar(context, 'ব্যবসা এডিট'),
@@ -165,8 +181,250 @@ class _BusinessEditScreenState extends State<BusinessEditScreen> {
               if (t != null) setState(() => _type = t);
             }),
             const Spacer(),
-            PrimaryButton('নিশ্চিত', onPressed: () => Navigator.pop(context)),
+            PrimaryButton('নিশ্চিত', onPressed: () {
+              final updated = _name.text.trim();
+              if (updated.isNotEmpty) {
+                businessNameNotifier.value = updated;
+              }
+              businessTypeNotifier.value = _type;
+              Navigator.pop(context);
+            }),
           ]),
         ),
       );
+}
+
+/// User and business profile information screen opened from the navigation drawer.
+class UserInfoScreen extends StatefulWidget {
+  const UserInfoScreen({super.key});
+  @override
+  State<UserInfoScreen> createState() => _UserInfoScreenState();
+}
+
+class _UserInfoScreenState extends State<UserInfoScreen> {
+  String _ownerName = '';
+  String _nid = '';
+  String _businessAge = '';
+  String _address = '';
+
+  String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
+    if (parts.isEmpty) return 'ট';
+    if (parts.length == 1) {
+      return parts.first.characters.take(2).toString().toUpperCase();
+    }
+    return '${parts[0].characters.first}${parts[1].characters.first}'.toUpperCase();
+  }
+
+  Widget _infoField(String label, String value) => Padding(
+        padding: const EdgeInsets.only(bottom: 26),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontSize: 15, color: Colors.black54),
+            ),
+            if (value.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                value,
+                style: const TextStyle(fontSize: 18, color: Colors.black87),
+              ),
+            ] else
+              const SizedBox(height: 18),
+          ],
+        ),
+      );
+
+  Future<void> _showEditSheet() async {
+    final ownerCtrl = TextEditingController(text: _ownerName);
+    final nidCtrl = TextEditingController(text: _nid);
+    final ageCtrl = TextEditingController(text: _businessAge);
+    final addrCtrl = TextEditingController(text: _address);
+    String selectedType = businessTypeNotifier.value;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            16,
+            16,
+            MediaQuery.of(ctx).viewInsets.bottom + 16,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'তথ্য আপডেট করুন',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 14),
+                AppField('নাম', controller: ownerCtrl),
+                const SizedBox(height: 12),
+                _TypeTile(
+                  type: selectedType,
+                  onTap: () async {
+                    final t = await showBusinessTypeSheet(ctx);
+                    if (t != null) setSheetState(() => selectedType = t);
+                  },
+                ),
+                const SizedBox(height: 12),
+                AppField(
+                  'NID নম্বর',
+                  controller: nidCtrl,
+                  keyboard: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                AppField(
+                  'ব্যবসা প্রতিষ্ঠানের আনুমানিক বয়স (বছর)',
+                  controller: ageCtrl,
+                  keyboard: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                AppField('ব্যবসা প্রতিষ্ঠানের ঠিকানা', controller: addrCtrl),
+                const SizedBox(height: 16),
+                PrimaryButton(
+                  'নিশ্চিত',
+                  onPressed: () {
+                    setState(() {
+                      _ownerName = ownerCtrl.text.trim();
+                      _nid = nidCtrl.text.trim();
+                      _businessAge = ageCtrl.text.trim();
+                      _address = addrCtrl.text.trim();
+                    });
+                    businessTypeNotifier.value = selectedType;
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: backBar(context, 'আপনার তথ্য সমূহ'),
+      body: ValueListenableBuilder<String>(
+        valueListenable: businessNameNotifier,
+        builder: (_, businessName, _) {
+          final phone = userPhoneNotifier.value;
+          return ValueListenableBuilder<String>(
+            valueListenable: businessTypeNotifier,
+            builder: (_, businessType, _) => ListView(
+              children: [
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 18,
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 27,
+                        backgroundColor: const Color(0xFFF2C94C),
+                        child: Text(
+                          _initials(businessName),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              businessName,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              phone.isNotEmpty ? phone : '01862274810',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(height: 6, color: const Color(0xFFF3F4F6)),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'অন্যান্য তথ্য',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          const Spacer(),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: _showEditSheet,
+                            child: Container(
+                              width: 38,
+                              height: 38,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFF3F4F6),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.drive_file_rename_outline,
+                                size: 20,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      _infoField('নাম', _ownerName),
+                      _infoField('ব্যবসার ধরণ', businessType),
+                      _infoField('NID নম্বর', _nid),
+                      _infoField(
+                        'ব্যবসা প্রতিষ্ঠানের আনুমানিক বয়স (বছর)',
+                        _businessAge,
+                      ),
+                      _infoField('ব্যবসা প্রতিষ্ঠানের ঠিকানা', _address),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

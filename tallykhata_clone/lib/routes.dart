@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'screens/splash_screen.dart';
 import 'screens/auth_screens.dart';
 import 'screens/main_shell.dart';
 import 'screens/feature_screens.dart';
@@ -31,6 +32,7 @@ class Routes {
   static const ownerReport = '/owner-report';
   static const settings = '/settings';
   // business
+  static const userInfo = '/user-info';
   static const newBusiness = '/new-business';
   static const businessSettings = '/business-settings';
   static const businessEdit = '/business-edit';
@@ -74,6 +76,7 @@ final Map<String, WidgetBuilder> appRoutes = {
   ),
   Routes.cashHisab: (_) => const CashHisabScreen(),
   Routes.settings: (_) => const SettingsScreen(),
+  Routes.userInfo: (_) => const UserInfoScreen(),
   Routes.newBusiness: (_) => const NewBusinessScreen(),
   Routes.businessSettings: (_) => const BusinessSettingsScreen(),
   Routes.businessEdit: (_) => const BusinessEditScreen(),

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
-/// Ekta reusable page : SS 26 (মালিকের রিপোর্ট), 28 (বাকি হিসাব), 29 (খরচ), 30 (বেচা কেনা হিসাব)
-/// Shobgula te: filter dropdown (দিন/মাস) + date picker + table header + empty state.
+/// Reusable report screen used for Owner Report, Due Report, Expense Report, and Buy-Sell Report.
+/// Includes a day/month filter dropdown, date selector, table header, and empty state.
 class ReportScreen extends StatefulWidget {
   final String title;
   final String col1;
   final String? col2;
-  final bool monthMode;          // true hole default filter "মাস"
-  final bool showSummaryCheck;   // "সংক্ষিপ্ত" checkbox (SS 30)
+  final bool monthMode;          // Defaults the filter to monthly mode when true
+  final bool showSummaryCheck;   // Displays the summary checkbox when true
   const ReportScreen({super.key, required this.title, required this.col1, this.col2, this.monthMode = false, this.showSummaryCheck = false});
   @override
   State<ReportScreen> createState() => _ReportScreenState();
@@ -77,7 +77,7 @@ class _ReportScreenState extends State<ReportScreen> {
       );
 }
 
-/// SS 27 : ক্যাশ হিসাব — 2 ta tab (ক্যাশবক্স রিপোর্ট / ক্যাশ রিপোর্ট)
+/// Cash report screen with two tabs: Cashbox Report and Cash Report.
 class CashHisabScreen extends StatelessWidget {
   const CashHisabScreen({super.key});
 

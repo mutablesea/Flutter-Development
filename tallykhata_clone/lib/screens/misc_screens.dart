@@ -3,7 +3,7 @@ import '../routes.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
-/// SS 24,25 : সেটিংস (Switch list)
+/// App settings screen with toggle switches and profile/security options.
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
   @override
@@ -36,7 +36,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
 }
 
-/// SS 37 : ইনবক্স (list) -> tap korle SS 38 detail
+/// Inbox screen listing notifications; tapping an item opens the detail screen.
 class InboxScreen extends StatelessWidget {
   const InboxScreen({super.key});
   @override
@@ -64,7 +64,7 @@ class InboxScreen extends StatelessWidget {
   }
 }
 
-/// SS 38 : বিস্তারিত (banner + body + CTA button)
+/// Inbox notification detail screen with banner, message body, and action button.
 class InboxDetailScreen extends StatelessWidget {
   const InboxDetailScreen({super.key});
   @override
@@ -91,7 +91,7 @@ class InboxDetailScreen extends StatelessWidget {
   }
 }
 
-/// SS 39 : সাপোর্ট (FAQ cards + bottom chat input)
+/// Customer support screen with FAQ quick-action cards and bottom chat input.
 class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
   @override
@@ -135,7 +135,7 @@ class SupportScreen extends StatelessWidget {
   }
 }
 
-/// SS 40 : নতুন কাস্টমার/সাপ্লায়ার (radio toggle + name + phone)
+/// Screen to add a new customer or supplier with role toggle, name, and phone fields.
 class AddPartyScreen extends StatefulWidget {
   const AddPartyScreen({super.key});
   @override

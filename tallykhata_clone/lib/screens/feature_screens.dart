@@ -3,7 +3,7 @@ import '../routes.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 
-/// SS 17 : স্টক হিসাব
+/// Stock management screen showing products and an action button to add a product.
 class StockScreen extends StatelessWidget {
   const StockScreen({super.key});
   @override
@@ -14,7 +14,7 @@ class StockScreen extends StatelessWidget {
       );
 }
 
-/// SS 18 : নতুন প্রোডাক্ট (name + unit dropdown)
+/// Screen to add a new product with product name and unit selector.
 class AddProductScreen extends StatefulWidget {
   const AddProductScreen({super.key});
   @override
@@ -44,7 +44,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       );
 }
 
-/// SS 19 : ব্যবসার নোট (list)
+/// Business notes list screen.
 class NoteScreen extends StatelessWidget {
   const NoteScreen({super.key});
   @override
@@ -55,7 +55,7 @@ class NoteScreen extends StatelessWidget {
       );
 }
 
-/// SS 20 : নোট লেখা (checkbox + textfield, keyboard auto open)
+/// Screen to compose a new business note with checkbox and auto-focused text field.
 class AddNoteScreen extends StatelessWidget {
   const AddNoteScreen({super.key});
   @override
@@ -73,7 +73,7 @@ class AddNoteScreen extends StatelessWidget {
       );
 }
 
-/// SS 21 : গ্রুপ তাগাদা
+/// Group payment reminder (Tagada) screen.
 class TagadaScreen extends StatelessWidget {
   const TagadaScreen({super.key});
   @override
@@ -83,7 +83,7 @@ class TagadaScreen extends StatelessWidget {
       );
 }
 
-/// SS 22 : ডাটা ব্যাকআপ
+/// Data backup status and manual backup trigger screen.
 class BackupScreen extends StatelessWidget {
   const BackupScreen({super.key});
   @override
@@ -108,7 +108,7 @@ class BackupScreen extends StatelessWidget {
       );
 }
 
-/// SS 23 : টালি-মেসেজ কিনি (pack list)
+/// Screen to view SMS balance and purchase Tally-Message packs.
 class TaliMessageScreen extends StatelessWidget {
   const TaliMessageScreen({super.key});
   @override
