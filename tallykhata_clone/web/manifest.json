@@ -1,6 +1,6 @@
 {
-    "name": "tallykhata_clone",
-    "short_name": "tallykhata_clone",
+    "name": "TallyKhata Clone",
+    "short_name": "TallyKhata Clone",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

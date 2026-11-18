@@ -10,7 +10,7 @@ class TallyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: 'TallyKhata',
+    title: 'TallyKhata Clone',
     theme: appTheme(),
     initialRoute: Routes.splash,
     routes: appRoutes,
