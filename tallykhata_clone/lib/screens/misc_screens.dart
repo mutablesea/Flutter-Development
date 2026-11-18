@@ -52,8 +52,7 @@ class InboxScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12), itemCount: msgs.length,
         separatorBuilder: (_, __) => const Divider(),
         itemBuilder: (_, i) => ListTile(
-          leading: Container(width: 48, height: 48, decoration: BoxDecoration(color: kRed, borderRadius: BorderRadius.circular(8)),
-              child: const Icon(Icons.menu_book, color: Colors.white)),
+          leading: Image.asset('assets/images/tallykhata_logo.png', width: 44, height: 44),
           title: Text(msgs[i].$1, style: const TextStyle(fontWeight: FontWeight.w600)),
           subtitle: Text('${msgs[i].$2}\n${msgs[i].$3}', style: const TextStyle(fontSize: 12)),
           isThreeLine: true,
