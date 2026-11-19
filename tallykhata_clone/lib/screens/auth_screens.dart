@@ -174,10 +174,21 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () => Navigator.pushReplacementNamed(context, Routes.qrIntro));
+    _timer = Timer(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, Routes.qrIntro);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override

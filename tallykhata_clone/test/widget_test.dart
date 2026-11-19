@@ -1,30 +1,31 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:tallykhata_clone/main.dart';
+import 'package:tallykhata_clone/screens/splash_screen.dart';
+import 'package:tallykhata_clone/screens/auth_screens.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  setUpAll(() {
+    GoogleFonts.config.allowRuntimeFetching = false;
+  });
+
+  testWidgets('TallyApp launches SplashScreen and navigates to LoginScreen', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const TallyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify SplashScreen renders with the TallyKhata images
+    expect(find.byType(SplashScreen), findsOneWidget);
+    expect(find.byType(Image), findsNWidgets(3));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Advance 2 seconds to trigger navigation to LoginScreen
+    await tester.pump(const Duration(seconds: 2));
     await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.text('রেজিস্ট্রেশন/লগইন করুন'), findsOneWidget);
   });
 }
