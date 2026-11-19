@@ -253,13 +253,12 @@ class QrIntroScreen extends StatelessWidget {
               const Text('টালিপে QR — ব্যবসায়ীদের জন্য\nসেরা বাংলা QR',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
               const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFBF2F2),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Column(
+              Material(
+                color: const Color(0xFFFBF2F2),
+                borderRadius: BorderRadius.circular(14),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
@@ -324,6 +323,7 @@ class QrIntroScreen extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
                 ),
               ),
               const Spacer(),

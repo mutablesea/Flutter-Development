@@ -524,10 +524,10 @@ class _CashboxTabState extends State<CashboxTab> {
             ),
           ),
           Expanded(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            child: Material(
+              color: Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
               child: Column(
                 children: [
