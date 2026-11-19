@@ -8,7 +8,12 @@ class StockScreen extends StatelessWidget {
   const StockScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: backBar(context, 'স্টক হিসাব', actions: const [HelpChip()]),
+        appBar: backBar(
+          context,
+          'স্টক হিসাব',
+          showBusinessName: true,
+          actions: const [HelpChip()],
+        ),
         body: const EmptyState('প্রোডাক্ট যোগ করে স্টকের হিসাব রাখুন।', icon: Icons.inventory_2_outlined),
         floatingActionButton: redFab('নতুন প্রোডাক্ট', Icons.add, () => Navigator.pushNamed(context, Routes.addProduct)),
       );
@@ -49,7 +54,12 @@ class NoteScreen extends StatelessWidget {
   const NoteScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: backBar(context, 'ব্যবসার নোট', actions: const [HelpChip()]),
+        appBar: backBar(
+          context,
+          'ব্যবসার নোট',
+          showBusinessName: true,
+          actions: const [HelpChip()],
+        ),
         body: const EmptyState('পণ্য তালিকা বা প্রয়োজনীয় নোট লিখে রাখুন ও শেয়ার করুন।'),
         floatingActionButton: redFab('নোট যোগ করি', Icons.add, () => Navigator.pushNamed(context, Routes.addNote)),
       );
@@ -60,7 +70,12 @@ class AddNoteScreen extends StatelessWidget {
   const AddNoteScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: backBar(context, 'ব্যবসার নোট', actions: const [HelpChip()]),
+        appBar: backBar(
+          context,
+          'ব্যবসার নোট',
+          showBusinessName: true,
+          actions: const [HelpChip()],
+        ),
         body: Container(
           color: Colors.grey.shade100, padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(children: [
@@ -78,7 +93,12 @@ class TagadaScreen extends StatelessWidget {
   const TagadaScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: backBar(context, 'তাগাদা পাঠাই', actions: const [HelpChip()]),
+        appBar: backBar(
+          context,
+          'তাগাদা পাঠাই',
+          showBusinessName: true,
+          actions: const [HelpChip()],
+        ),
         body: const EmptyState('কোনো কাস্টমার পাওয়া যায়নি।', icon: Icons.chat_bubble_outline),
       );
 }

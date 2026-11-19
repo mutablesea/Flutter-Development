@@ -11,17 +11,22 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
-  testWidgets('TallyApp launches SplashScreen and navigates to LoginScreen', (
+  testWidgets('TallyApp launches two-stage SplashScreen and navigates to LoginScreen', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const TallyApp());
 
-    // Verify SplashScreen renders with the TallyKhata images
+    // Stage 1: Icon splash renders with 1 image (tallykhata_logo.png)
     expect(find.byType(SplashScreen), findsOneWidget);
+    expect(find.byType(Image), findsOneWidget);
+
+    // Advance 1.2s -> transitions to Stage 2 (full splash with 3 images)
+    await tester.pump(const Duration(milliseconds: 1200));
+    await tester.pump(const Duration(milliseconds: 600));
     expect(find.byType(Image), findsNWidgets(3));
 
-    // Advance 2 seconds to trigger navigation to LoginScreen
-    await tester.pump(const Duration(seconds: 2));
+    // Advance past 3.2s total -> navigates to LoginScreen
+    await tester.pump(const Duration(milliseconds: 2000));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
 

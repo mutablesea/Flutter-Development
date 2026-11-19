@@ -107,8 +107,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 AppField('মোবাইল নম্বর', icon: Icons.phone_outlined, keyboard: TextInputType.phone,
                     onChanged: (v) => setState(() => _phone = v)),
                 const SizedBox(height: 10),
-                const Text('রেজিস্ট্রেশন করতে আপনার NID দিয়ে নিবন্ধিত মোবাইল নম্বর ব্যবহার করুন।',
-                    style: TextStyle(color: Colors.grey)),
+                const Text.rich(
+                  TextSpan(
+                    style: TextStyle(color: Colors.black54, fontSize: 14),
+                    children: [
+                      TextSpan(text: 'রেজিস্ট্রেশন করতে আপনার '),
+                      TextSpan(
+                        text: 'NID দিয়ে নিবন্ধিত মোবাইল নম্বর',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      TextSpan(text: ' ব্যবহার করুন।'),
+                    ],
+                  ),
+                ),
               ]),
             ),
           ),
@@ -123,8 +137,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                       : null),
               const SizedBox(height: 8),
-              const Text('পরবর্তীতে যাওয়ার নির্দেশের মাধ্যমে আপনি টালিখাতার শর্তাবলীতে সম্মতি প্রদান করছেন।',
-                  textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey)),
+              const Text.rich(
+                TextSpan(
+                  style: TextStyle(fontSize: 12, color: Colors.black54),
+                  children: [
+                    TextSpan(
+                      text:
+                          'পরবর্তীতে যাওয়ার নির্দেশের মাধ্যমে আপনি টালিখাতার ',
+                    ),
+                    TextSpan(
+                      text: 'শর্তাবলীতে',
+                      style: TextStyle(
+                        color: kRed,
+                        decoration: TextDecoration.underline,
+                        decorationColor: kRed,
+                      ),
+                    ),
+                    TextSpan(text: ' সম্মতি প্রদান করছেন।'),
+                  ],
+                ),
+                textAlign: TextAlign.center,
+              ),
             ]),
           ),
         ]),
@@ -222,25 +255,122 @@ class QrIntroScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: const Color(0xFFFBEFEF), borderRadius: BorderRadius.circular(12)),
-                child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('টালিপে QR একাউন্ট আবেদন', style: TextStyle(fontSize: 17)),
-                  Text('২টি সহজ ধাপে টালিপে QR একাউন্ট-এর আবেদন করুন', style: TextStyle(color: Colors.grey)),
-                  SizedBox(height: 12),
-                  ListTile(leading: CircleAvatar(child: Icon(Icons.person_outline)), title: Text('NID ও সেলফি')),
-                  ListTile(leading: CircleAvatar(child: Icon(Icons.store_outlined)), title: Text('ব্যবসার ছবি ও তথ্য')),
-                ]),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFBF2F2),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'টালিপে QR একাউন্ট আবেদন',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    const Text(
+                      '২টি সহজ ধাপে টালিপে QR একাউন্ট-এর আবেদন করুন',
+                      style: TextStyle(color: Colors.black54, fontSize: 13),
+                    ),
+                    const SizedBox(height: 12),
+                    const ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black87,
+                        child: Icon(Icons.person_outline),
+                      ),
+                      title: Text('NID ও সেলফি'),
+                    ),
+                    const ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black87,
+                        child: Icon(Icons.storefront_outlined),
+                      ),
+                      title: Text('ব্যবসার ছবি ও তথ্য'),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: Colors.black87,
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'NID এবং ব্যবসার ছবি থাকলে ২ মিনিটে QR পাবেন।',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Spacer(),
               Center(
                 child: TextButton(
                   onPressed: () => fromHome
                       ? Navigator.pop(context)
-                      : Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false), // Clear navigation stack so back button doesn't return to login
-                  child: const Text('টালিখাতা ব্যবহার করবো', style: TextStyle(color: kRed, fontSize: 16)),
+                      : Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          Routes.home,
+                          (r) => false,
+                        ), // Clear navigation stack so back button doesn't return to login
+                  child: const Text(
+                    'টালিখাতা ব্যবহার করবো',
+                    style: TextStyle(
+                      color: kRed,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               PrimaryButton('টালিপে QR একাউন্ট খুলুন', onPressed: () {}),
+              const SizedBox(height: 10),
+              const Center(
+                child: Text.rich(
+                  TextSpan(
+                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                    children: [
+                      TextSpan(
+                        text:
+                            'টালিপে QR একাউন্ট খোলার মাধ্যমে আপনি টালিপে QR\nএকাউন্ট-এর ',
+                      ),
+                      TextSpan(
+                        text: 'শর্তাবলীতে',
+                        style: TextStyle(
+                          color: kRed,
+                          decoration: TextDecoration.underline,
+                          decorationColor: kRed,
+                        ),
+                      ),
+                      TextSpan(text: ' সম্মতি প্রদান করছেন।'),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ]),
           ),
         ),

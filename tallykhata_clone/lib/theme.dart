@@ -21,7 +21,11 @@ ThemeData appTheme() {
     scaffoldBackgroundColor: Colors.white,
   );
   return base.copyWith(
-    textTheme: GoogleFonts.hindSiliguriTextTheme(base.textTheme), // Bangla font
+    textTheme: GoogleFonts.notoSansBengaliTextTheme(base.textTheme),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       elevation: 0,

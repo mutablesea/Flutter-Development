@@ -31,8 +31,7 @@ class _MainShellState extends State<MainShell> {
       indicatorColor: kRedLight,
       onDestinationSelected: (i) {
         if (i == 3) {
-          _key.currentState
-              ?.openEndDrawer(); // Menu tab opens the right drawer without switching tabs
+          _key.currentState?.openEndDrawer(); // Menu tab opens the right drawer without switching tabs
         } else {
           setState(() => _index = i);
         }
@@ -239,80 +238,127 @@ class TaliTab extends StatelessWidget {
       (Icons.qr_code_2, 'QR কোড', Routes.qrCode),
       (Icons.cloud_upload_outlined, 'ডাটা ব্যাকআপ', Routes.backup),
       (Icons.sms_outlined, 'টালি-মেসেজ', Routes.taliMessage),
-      (Icons.inbox_outlined, 'ক্যাশবক্স', 'cashbox'), // Switches to the Cashbox tab
+      (
+        Icons.inbox_outlined,
+        'ক্যাশবক্স',
+        'cashbox',
+      ), // Switches to the Cashbox tab
     ];
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F2E2),
       body: Column(
         children: [
           GoldHeader(
-            child: Column(
-              children: [
-                // Promotional QR banner
-                Container(
-                  margin: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFBE4E8),
-                    borderRadius: BorderRadius.circular(8),
+            child: Container(
+              margin: const EdgeInsets.only(top: 6),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF7F2E2),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                children: [
+                  // Promotional QR banner
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFBE4E8),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'বাংলা QR পেতে এখানে ট্যাপ করুন  ➜',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'বাংলা QR পেতে এখানে ট্যাপ করুন  ➜',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  GridView.count(
+                    crossAxisCount: 4,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(8),
+                    childAspectRatio: 1.05,
+                    children: [
+                      for (final it in items)
+                        InkWell(
+                          onTap: () {
+                            if (it.$3 == null) return;
+                            if (it.$3 == 'cashbox') {
+                              context
+                                  .findAncestorStateOfType<_MainShellState>()
+                                  ?.selectTab(1); // Switch to Cashbox tab
+                            } else {
+                              Navigator.pushNamed(context, it.$3!);
+                            }
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(it.$1, size: 30, color: kRed),
+                              const SizedBox(height: 6),
+                              Text(
+                                it.$2,
+                                style: const TextStyle(fontSize: 12),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
-                ),
-                GridView.count(
-                  crossAxisCount: 4,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(8),
-                  childAspectRatio: 1.05,
-                  children: [
-                    for (final it in items)
-                      InkWell(
-                        onTap: () {
-                          if (it.$3 == null) return;
-                          if (it.$3 == 'cashbox') {
-                            context
-                                .findAncestorStateOfType<_MainShellState>()
-                                ?.selectTab(1); // Switch to Cashbox tab
-                          } else {
-                            Navigator.pushNamed(context, it.$3!);
-                          }
-                        },
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(14, 14, 14, 4),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'কাস্টমার ০ / সাপ্লায়ার ০',
+                        style: TextStyle(fontSize: 15, color: Colors.black87),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: const Alignment(0, -0.35),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(it.$1, size: 30, color: kRed),
-                            const SizedBox(height: 6),
-                            Text(
-                              it.$2,
-                              style: const TextStyle(fontSize: 12),
+                            Image.asset(
+                              'assets/images/tallykhata_logo9.jpg',
+                              width: 170,
+                              fit: BoxFit.contain,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'ব্যবহার শুরু করতে কাস্টমার/সাপ্লায়ার যোগ করুন।',
                               textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black87,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(12),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text('কাস্টমার ০ / সাপ্লায়ার ০'),
-            ),
-          ),
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Image.asset(
-                  'assets/images/tallykhata_logo4.jpg',
-                  fit: BoxFit.contain,
-                ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -328,8 +374,17 @@ class TaliTab extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------- Tab 2: Cashbox
-class CashboxTab extends StatelessWidget {
+class CashboxTab extends StatefulWidget {
   const CashboxTab({super.key});
+  @override
+  State<CashboxTab> createState() => _CashboxTabState();
+}
+
+class _CashboxTabState extends State<CashboxTab> {
+  bool _hideNumbers = false;
+
+  String _num(String value) => _hideNumbers ? '- - -' : value;
+
   @override
   Widget build(BuildContext context) {
     final rows = <(String, Color, IconData)>[
@@ -339,99 +394,298 @@ class CashboxTab extends StatelessWidget {
       ('মালিক দিল', kGreen, Icons.trending_up),
       ('মালিক নিল', kRed, Icons.trending_down),
     ];
-    return Column(
-      children: [
-        GoldHeader(
-          child: Column(
-            children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(
-                            '০',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text('আজকের বেচা'),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(
-                            '০',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text('বর্তমান ক্যাশ'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+    return Container(
+      color: const Color(0xFFFAF6E9),
+      child: Column(
+        children: [
+          GoldHeader(
+            child: Container(
+              margin: const EdgeInsets.only(top: 6),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF2E8CC),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              Container(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  _num('০'),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                const Text(
+                                  'আজকের বেচা',
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(width: 1, color: const Color(0xFFE0D0A6)),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  _num('০'),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                const Text(
+                                  'বর্তমান ক্যাশ',
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFAF6E9),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'আজ পেলাম ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                Text(
+                                  _num('০'),
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: kGreen,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(width: 1, color: const Color(0xFFE8DFC5)),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'আজ দিলাম ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                Text(
+                                  _num('০'),
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: kRed,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    FilledButton.tonal(
-                      onPressed: () =>
-                          Navigator.pushNamed(context, Routes.cashHisab),
-                      child: const Text('রিপোর্ট'),
-                    ),
-                    const Spacer(),
-                    OutlinedButton(
-                      onPressed: () =>
-                          Navigator.pushNamed(context, Routes.cashHisab),
-                      child: const Text('ক্যাশবক্স মিলাই'),
-                    ),
-                  ],
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-            ],
-          ),
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              for (final r in rows)
-                ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: r.$2.withValues(alpha: .12),
-                    child: Icon(r.$3, color: r.$2),
-                  ),
-                  title: Text(r.$1, style: const TextStyle(fontSize: 17)),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '0.00',
-                        style: TextStyle(
-                          color: r.$2,
-                          fontWeight: FontWeight.w600,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () =>
+                              Navigator.pushNamed(context, Routes.cashHisab),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEAD9AD),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.description_outlined, size: 18),
+                                SizedBox(width: 6),
+                                Text(
+                                  'রিপোর্ট',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      const Icon(Icons.chevron_right),
-                    ],
+                        const Spacer(),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () =>
+                              Navigator.pushNamed(context, Routes.cashHisab),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF3F4F6),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.swap_horiz, size: 18),
+                                SizedBox(width: 6),
+                                Text(
+                                  'ক্যাশবক্স মিলাই',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: () =>
+                              setState(() => _hideNumbers = !_hideNumbers),
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF3F4F6),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _hideNumbers
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              size: 20,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  onTap: () {
-                    /* TODO: entry form page */
-                  },
-                ),
-            ],
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                    child: Row(
+                      children: [
+                        const Text(
+                          'বাকি আদায়  ',
+                          style: TextStyle(fontSize: 15, color: Colors.black87),
+                        ),
+                        Text(
+                          _num('০'),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: kGreen,
+                          ),
+                        ),
+                        const Spacer(),
+                        const Text(
+                          'পেমেন্ট দেয়া  ',
+                          style: TextStyle(fontSize: 15, color: Colors.black87),
+                        ),
+                        Text(
+                          _num('০'),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: kRed,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(height: 4, color: const Color(0xFFF3F4F6)),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.only(top: 6),
+                      children: [
+                        for (final r in rows)
+                          ListTile(
+                            leading: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: r.$2.withValues(alpha: .12),
+                              child: Icon(r.$3, color: r.$2),
+                            ),
+                            title: Text(
+                              r.$1,
+                              style: const TextStyle(fontSize: 17),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _num('০.০০'),
+                                  style: TextStyle(
+                                    color: r.$2,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(Icons.chevron_right),
+                              ],
+                            ),
+                            onTap: () {},
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -514,6 +768,8 @@ class MenuDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Drawer(
+    backgroundColor: Colors.white,
+    surfaceTintColor: Colors.transparent,
     child: SafeArea(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -598,10 +854,25 @@ class MenuDrawer extends StatelessWidget {
             child: Text('অন্যান্য', style: TextStyle(color: kRed)),
           ),
           _item(context, Icons.settings_outlined, 'সেটিংস', Routes.settings),
+          ListTile(
+            dense: true,
+            leading: const Icon(Icons.share_outlined, size: 20),
+            title: const Text('টালিখাতা গোল্ড রেফার করুন'),
+            onTap: () => Navigator.pop(context),
+          ),
           const Spacer(),
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('টালিখাতা        ভার্সন - ৭.১৮.১'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 36),
+            child: Row(
+              children: [
+                Image.asset('assets/images/tallykhata_logo8.png', height: 30),
+                const Spacer(),
+                const Text(
+                  'ভার্সন - ৭.১৮.১',
+                  style: TextStyle(color: Colors.black45, fontSize: 13),
+                ),
+              ],
+            ),
           ),
         ],
       ),

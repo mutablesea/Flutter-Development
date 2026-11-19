@@ -36,10 +36,50 @@ class EmptyState extends StatelessWidget {
       );
 }
 
-/// Standard AppBar with a back button and title.
-PreferredSizeWidget backBar(BuildContext c, String title, {List<Widget>? actions}) => AppBar(
-      leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(c)),
-      title: Text(title, style: const TextStyle(fontSize: 18)),
+/// Standard AppBar with a back button, title, and optional active business name subtitle.
+PreferredSizeWidget backBar(
+  BuildContext c,
+  String title, {
+  List<Widget>? actions,
+  bool showBusinessName = false,
+}) =>
+    AppBar(
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () => Navigator.pop(c),
+      ),
+      title: showBusinessName
+          ? ValueListenableBuilder<String>(
+              valueListenable: businessNameNotifier,
+              builder: (_, businessName, _) => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    businessName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Text(title, style: const TextStyle(fontSize: 18)),
+      bottom: const PreferredSize(
+        preferredSize: Size.fromHeight(1),
+        child: Divider(height: 1, color: Color(0xFFEEEEEE)),
+      ),
       actions: actions,
     );
 
@@ -50,9 +90,11 @@ class HelpChip extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.only(right: 12),
         child: Chip(
-          avatar: const Icon(Icons.help_outline, size: 16),
-          label: const Text('হেল্প'),
-          backgroundColor: Colors.grey.shade200, side: BorderSide.none,
+          avatar: const Icon(Icons.help_outline, size: 18, color: Colors.black87),
+          label: const Text('হেল্প', style: TextStyle(fontSize: 13)),
+          backgroundColor: const Color(0xFFF3F4F6),
+          shape: const StadiumBorder(),
+          side: BorderSide.none,
         ),
       );
 }

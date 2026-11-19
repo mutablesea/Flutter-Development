@@ -26,47 +26,106 @@ const kBusinessTypes = [
 ];
 
 /// Bottom sheet displaying a 2-column grid of business types; returns the selected type.
-Future<String?> showBusinessTypeSheet(BuildContext context) =>
-    showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SizedBox(
-        height: MediaQuery.of(ctx).size.height * .85,
+Future<String?> showBusinessTypeSheet(BuildContext context) {
+  bool isPersonal = false;
+  String? selectedType;
+
+  return showModalBottomSheet<String>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setSheetState) => SizedBox(
+        height: MediaQuery.of(ctx).size.height * .88,
         child: Column(
           children: [
-            ListTile(
-              title: const Text(
-                'আপনার ব্যবসার ধরণ কি?',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
+              child: Row(
+                children: [
+                  const Text(
+                    'আপনার ব্যবসার ধরণ কি?',
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w600),
+                  ),
+                  const Spacer(),
+                  InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => Navigator.pop(ctx),
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF0F0F0),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 18,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              trailing: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(ctx),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.person_outline,
+                    color: Color(0xFFD99B66),
+                    size: 26,
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Text(
+                      'ব্যক্তিগত হিসাব রাখি',
+                      style: TextStyle(fontSize: 16, color: Colors.black87),
+                    ),
+                  ),
+                  Switch(
+                    value: isPersonal,
+                    activeThumbColor: kRed,
+                    inactiveThumbColor: const Color(0xFFE5B8B8),
+                    inactiveTrackColor: const Color(0xFFF3EBEB),
+                    onChanged: (v) => setSheetState(() {
+                      isPersonal = v;
+                      if (v) selectedType = 'ব্যক্তিগত হিসাব রাখি';
+                    }),
+                  ),
+                ],
               ),
             ),
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
-                childAspectRatio: 2.4,
+                childAspectRatio: 2.3,
                 padding: const EdgeInsets.all(12),
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
                 children: [
                   for (final t in kBusinessTypes)
                     InkWell(
-                      onTap: () => Navigator.pop(
-                        ctx,
-                        t,
-                      ), // Return selected value and close bottom sheet
+                      borderRadius: BorderRadius.circular(10),
+                      onTap: () => setSheetState(() {
+                        isPersonal = false;
+                        selectedType = t;
+                      }),
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xFFF8F9FA),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: (!isPersonal && selectedType == t)
+                                ? kRed
+                                : Colors.transparent,
+                            width: 1.5,
+                          ),
                         ),
                         child: Row(
                           children: [
@@ -85,10 +144,48 @@ Future<String?> showBusinessTypeSheet(BuildContext context) =>
                 ],
               ),
             ),
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: (isPersonal || selectedType != null)
+                        ? () => Navigator.pop(
+                              ctx,
+                              isPersonal
+                                  ? 'ব্যক্তিগত হিসাব রাখি'
+                                  : selectedType,
+                            )
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kRed,
+                      foregroundColor: Colors.white,
+                      disabledBackgroundColor: const Color(0xFFEACACA),
+                      disabledForegroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                    ),
+                    child: const Text(
+                      'নিশ্চিত',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
-    );
+    ),
+  );
+}
 
 /// Screen to create a new business with business name and type selector.
 class NewBusinessScreen extends StatefulWidget {
