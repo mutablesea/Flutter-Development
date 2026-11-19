@@ -472,7 +472,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              phone.isNotEmpty ? phone : '01862274810',
+                              phone.isNotEmpty ? phone : '018XXXXXXXX',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black54,
